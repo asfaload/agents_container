@@ -1,0 +1,6 @@
+.env
+dot_local/
+dot_config/
+kilocode_config/
+dot_claude
+claude.json
