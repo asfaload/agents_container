@@ -85,5 +85,6 @@ RUN npm i -g opencode-ai
 RUN npm install -g bun
 RUN bun add -g @openchamber/web
 RUN apt-get update && apt-get install -y antigravity
+RUN npm install --global octofriend
 
 USER ${USER_NAME}
