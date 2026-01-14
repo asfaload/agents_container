@@ -87,5 +87,6 @@ RUN npm install -g bun
 RUN bun add -g @openchamber/web
 RUN apt-get update && apt-get install -y antigravity
 RUN npm install --global octofriend
+RUN npm install -g opkg
 
 USER ${USER_NAME}
