@@ -38,6 +38,7 @@ docker run -it -v ${1:?pass directory with code as argument}:$1 \
   --env QT_X11_NO_MITSHM=1 \
   --workdir $1 \
   --cap-add=SYS_ADMIN \
+  --rm \
   -u $(id -u):$(id -g) $IMAGE_NAME bash
 
 # disable when we're done
