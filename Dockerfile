@@ -79,6 +79,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN curl -sSL http://dioxus.dev/install.sh | bash
 RUN bash -c "PATH=/home/${USER_NAME}/.cargo/bin:$PATH rustup component add rust-analyzer"
 RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
+RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
 
 USER root
 RUN npm i -g opencode-ai
