@@ -17,8 +17,6 @@ With some languages and tools: Node.js 24, Rust, Bun, ripgrep, git, asfald (down
 The file `env.sample` has a list of environent variables that are used.
 Copy it to `.env` and edit it with your keys and information, notably the
  API keys for the AI agents you want to use.
-If you use [direnv](https://direnv.net/) you're all set, otherwise you need
-to source the file with `. .env`.
 
 
 ## Build the Docker image
