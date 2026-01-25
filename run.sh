@@ -1,24 +1,25 @@
 #!/bin/bash
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+MOUNTS_DIR="$SCRIPT_DIR/mounts"
 
 . .env
 set -eux
 
-mkdir -p $SCRIPT_DIR/dot_local
-mkdir -p $SCRIPT_DIR/dot_config
-mkdir -p $SCRIPT_DIR/kilocode_config
-mkdir -p $SCRIPT_DIR/dot_claude
-touch  $SCRIPT_DIR/claude.json
+mkdir -p $MOUNTS_DIR/dot_local
+mkdir -p $MOUNTS_DIR/dot_config
+mkdir -p $MOUNTS_DIR/kilocode_config
+mkdir -p $MOUNTS_DIR/dot_claude
+touch  $MOUNTS_DIR/claude.json
 
 # to allow X apps to run
 xhost +local:docker
 docker run -it -v ${1:?pass directory with code as argument}:$1 \
-  -v $SCRIPT_DIR/kilocode_config:/home/dotdev/.kilocode \
-  -v $SCRIPT_DIR/dot_claude:/home/dotdev/.claude \
-  -v $SCRIPT_DIR/claude.json:/home/dotdev/.claude.json \
-  -v $SCRIPT_DIR/dot_local:/home/dotdev/.local \
-  -v $SCRIPT_DIR/dot_config:/home/dotdev/.config \
+  -v $MOUNTS_DIR/kilocode_config:/home/dotdev/.kilocode \
+  -v $MOUNTS_DIR/dot_claude:/home/dotdev/.claude \
+  -v $MOUNTS_DIR/claude.json:/home/dotdev/.claude.json \
+  -v $MOUNTS_DIR/dot_local:/home/dotdev/.local \
+  -v $MOUNTS_DIR/dot_config:/home/dotdev/.config \
   -v ~/.config/nvim:/home/dotdev/.config/nvim \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /dev/dri/card0:/dev/dri/card0 \
