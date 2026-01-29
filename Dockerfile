@@ -82,11 +82,12 @@ RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
 RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
 
 USER root
-RUN npm i -g opencode-ai
 RUN npm install -g bun
 RUN bun add -g @openchamber/web
 RUN apt-get update && apt-get install -y antigravity
 RUN npm install --global octofriend
 RUN npm install -g opkg
+RUN cd /tmp && asfald https://github.com/agavra/tuicr/releases/download/v0.5.0/tuicr-0.5.0-x86_64-unknown-linux-gnu.tar.gz && tar zxvf tuicr* && mv tuicr /usr/local/bin
+RUN npm i -g opencode-ai
 
 USER ${USER_NAME}
