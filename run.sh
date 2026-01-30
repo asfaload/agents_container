@@ -12,16 +12,18 @@ mkdir -p $MOUNTS_DIR/kilocode_config
 mkdir -p $MOUNTS_DIR/dot_claude
 touch  $MOUNTS_DIR/claude.json
 
+# if user name is not set in env, set current user
+user_name=${USER_NAME:-$(id -u -n)}
 # to allow X apps to run
 xhost +local:docker
 docker run -it -v ${1:?pass directory with code as argument}:$1 \
-  -v $MOUNTS_DIR/kilocode_config:/home/dotdev/.kilocode \
-  -v $MOUNTS_DIR/dot_claude:/home/dotdev/.claude \
-  -v $MOUNTS_DIR/claude.json:/home/dotdev/.claude.json \
-  -v $MOUNTS_DIR/dot_local:/home/dotdev/.local \
-  -v $MOUNTS_DIR/dot_config:/home/dotdev/.config \
-  -v $MOUNTS_DIR/dot_openclaw:/home/dotdev/.openclaw \
-  -v ~/.config/nvim:/home/dotdev/.config/nvim \
+  -v $MOUNTS_DIR/kilocode_config:/home/${user_name}/.kilocode \
+  -v $MOUNTS_DIR/dot_claude:/home/${user_name}/.claude \
+  -v $MOUNTS_DIR/claude.json:/home/${user_name}/.claude.json \
+  -v $MOUNTS_DIR/dot_local:/home/${user_name}/.local \
+  -v $MOUNTS_DIR/dot_config:/home/${user_name}/.config \
+  -v $MOUNTS_DIR/dot_openclaw:/home/${user_name}/.openclaw \
+  -v ~/.config/nvim:/home/${user_name}/.config/nvim \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /dev/dri/card0:/dev/dri/card0 \
   -v /dev/dri/renderD128:/dev/dri/renderD128 \
@@ -41,7 +43,7 @@ docker run -it -v ${1:?pass directory with code as argument}:$1 \
   --workdir $1 \
   --cap-add=SYS_ADMIN \
   --rm \
-  -u $(id -u):$(id -g) $IMAGE_NAME bash
+  -u $(id -u $user_name):$(id -g $user_name) $IMAGE_NAME bash
 
 # disable when we're done
   xhost -local:docker
