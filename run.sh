@@ -20,6 +20,7 @@ docker run -it -v ${1:?pass directory with code as argument}:$1 \
   -v $MOUNTS_DIR/claude.json:/home/dotdev/.claude.json \
   -v $MOUNTS_DIR/dot_local:/home/dotdev/.local \
   -v $MOUNTS_DIR/dot_config:/home/dotdev/.config \
+  -v $MOUNTS_DIR/dot_openclaw:/home/dotdev/.openclaw \
   -v ~/.config/nvim:/home/dotdev/.config/nvim \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /dev/dri/card0:/dev/dri/card0 \

@@ -82,6 +82,7 @@ RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
 RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
 
 USER root
+RUN npm i -g clawdbot
 RUN npm install -g bun
 RUN bun add -g @openchamber/web
 RUN apt-get update && apt-get install -y antigravity
