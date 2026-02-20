@@ -81,7 +81,6 @@ RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
 RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
 
 USER root
-RUN npm i -g clawdbot
 # install mise
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV MISE_DATA_DIR="/mise"
@@ -99,7 +98,6 @@ RUN apt-get update && apt-get install -y antigravity
 RUN npm install --global octofriend
 RUN npm install -g opkg
 RUN cd /tmp && asfald https://github.com/agavra/tuicr/releases/download/v0.5.0/tuicr-0.5.0-x86_64-unknown-linux-gnu.tar.gz && tar zxvf tuicr* && mv tuicr /usr/local/bin
-
 RUN echo "2" && npm i -g opencode-ai
 RUN apt-get update && apt-get install -y jq
 RUN npm install -g @google/gemini-cli
