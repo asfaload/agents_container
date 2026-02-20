@@ -106,3 +106,4 @@ RUN npm install -g @google/gemini-cli
 USER ${USER_NAME}
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN curl -fsSL https://raw.githubusercontent.com/earchibald/gemini-superpowers/main/install-superpowers.sh | bash
+RUN mise use -g github:agavra/tuicr
