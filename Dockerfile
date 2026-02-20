@@ -50,7 +50,6 @@ RUN bash -c "cd /usr/local ; tar zxvf /tmp/nvim-linux-x86_64* ; cd bin; ln -s ..
 # install npm-installable agents
 RUN npm install -g @kilocode/cli
 RUN npm i -g @openai/codex
-RUN npm install -g @anthropic-ai/claude-code
 
 # install ripgrep from github release
 RUN bash -c "asfald https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-unknown-linux-musl.tar.gz && cd /tmp && tar zxvf ripgrep*.tar.gz && cp ripgrep*/rg /usr/local/bin"
@@ -89,6 +88,7 @@ RUN apt-get update && apt-get install -y antigravity
 RUN npm install --global octofriend
 RUN npm install -g opkg
 RUN cd /tmp && asfald https://github.com/agavra/tuicr/releases/download/v0.5.0/tuicr-0.5.0-x86_64-unknown-linux-gnu.tar.gz && tar zxvf tuicr* && mv tuicr /usr/local/bin
-RUN npm i -g opencode-ai
 
+RUN echo "2" && npm i -g opencode-ai
 USER ${USER_NAME}
+RUN curl -fsSL https://claude.ai/install.sh | bash
