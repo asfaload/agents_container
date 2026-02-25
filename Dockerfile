@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM debian:bookworm
 
 ARG USER_NAME
 ARG USER_ID
