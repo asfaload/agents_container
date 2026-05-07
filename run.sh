@@ -43,7 +43,7 @@ docker run -it -v ${1:?pass directory with code as argument}:$1 \
   --workdir $1 \
   --cap-add=SYS_ADMIN \
   --rm \
-  -u $(id -u $user_name):$(id -g $user_name) $IMAGE_NAME bash
+  -u $(id -u $user_name):$(id -g $user_name) $IMAGE_NAME /bin/bash
 
 # disable when we're done
   xhost -local:docker

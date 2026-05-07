@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:trixie
 
 ARG USER_NAME
 ARG USER_ID
@@ -28,6 +28,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 
+
 RUN adduser -u 1002 ${USER_NAME}
 USER ${USER_NAME}
 
@@ -37,10 +38,10 @@ RUN git config --global user.email "ai@example.com"
 
 
 USER root
-RUN curl -L -o /tmp/asfald https://github.com/asfaload/asfald/releases/download/v0.9.0/asfald-x86_64-unknown-linux-musl \
- && cd /tmp && echo "0b7e1270ecc5a4c37785511b032477ddc3a7cf718b0b2f8542229f39adf2ce6a  asfald" | sha256sum -c \
- && mv /tmp/asfald /usr/local/bin \
- && chmod +x /usr/local/bin/asfald
+RUN curl -L -O https://github.com/asfaload/asfald/releases/download/v0.9.0/asfald-x86_64-unknown-linux-musl \
+    && bash -c "sha256sum --ignore-missing -c <(curl --silent  https://gh.checksums.asfaload.com/github.com/asfaload/asfald/releases/download/v0.9.0/checksums.txt)" \
+    && mv asfald-x86_64-unknown-linux-musl /usr/local/bin/asfald \
+    && chmod +x /usr/local/bin/asfald
 WORKDIR /tmp
 
 # Install neovim, asfald checks checksums published by github
@@ -76,9 +77,9 @@ RUN mv /tmp/CodeNomad*.AppImage /usr/local/bin && chmod a+x /usr/local/bin/CodeN
 USER ${USER_NAME}
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN curl -sSL http://dioxus.dev/install.sh | bash
-RUN bash -c "PATH=/home/${USER_NAME}/.cargo/bin:$PATH rustup component add rust-analyzer"
-RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
-RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
+RUN bash -c "/home/${USER_NAME}/.cargo/bin/rustup component add rust-analyzer"
+#RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
+#RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
 
 USER root
 # install mise
@@ -92,9 +93,11 @@ RUN mkdir -p /mise/cache && chmod 777 -R /mise
 RUN curl https://mise.run | sh
 
 
+RUN echo "20260323"
+
 RUN npm install -g bun
 RUN bun add -g @openchamber/web
-RUN apt-get update && apt-get install -y antigravity
+RUN apt-get update && apt-get install -y antigravity chromium
 RUN npm install --global octofriend
 RUN npm install -g opkg
 RUN cd /tmp && asfald https://github.com/agavra/tuicr/releases/download/v0.5.0/tuicr-0.5.0-x86_64-unknown-linux-gnu.tar.gz && tar zxvf tuicr* && mv tuicr /usr/local/bin
@@ -102,9 +105,14 @@ RUN echo "2" && npm i -g opencode-ai
 RUN apt-get update && apt-get install -y jq
 RUN npm install -g @google/gemini-cli
 USER ${USER_NAME}
+RUN mise use -g npm:ccusage
+#RUN mise use -g npm:@ccusage/opencode
+RUN mise use -g github:agavra/tuicr
+RUN mise use -g npm:dirac-cli
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN curl -fsSL https://raw.githubusercontent.com/earchibald/gemini-superpowers/main/install-superpowers.sh | bash
-RUN mise use -g github:agavra/tuicr
-RUN mise use -g npm:ccusage
-RUN mise use -g npm:@ccusage/opencode
-RUN mise use -g npm:happy-coder
+
+
+RUN /home/$USER_NAME/.cargo/bin/cargo install --locked cargo-nextest
+RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin:/home/${USER_NAME}/.cargo/bin" > /home/${USER_NAME}/.bashrc
+RUN /home/${USER_NAME}/.cargo/bin/cargo install mdbook
