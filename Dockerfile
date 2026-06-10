@@ -29,7 +29,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
 
 
 
-RUN adduser -u 1002 ${USER_NAME}
+# Create the group only if its gid isn't already taken by the base image,
+# then create the user with the build-time uid/gid. useradd -g accepts a
+# numeric gid even when the existing group has a different name.
+RUN if ! getent group ${USER_GROUP} >/dev/null; then groupadd -g ${USER_GROUP} ${USER_NAME}; fi \
+    && useradd -m -u ${USER_ID} -g ${USER_GROUP} -s /bin/bash ${USER_NAME}
 USER ${USER_NAME}
 
 # configure git globally so it doesn't mess with the repo's local config
@@ -116,3 +120,5 @@ RUN curl -fsSL https://raw.githubusercontent.com/earchibald/gemini-superpowers/m
 RUN /home/$USER_NAME/.cargo/bin/cargo install --locked cargo-nextest
 RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin:/home/${USER_NAME}/.cargo/bin" > /home/${USER_NAME}/.bashrc
 RUN /home/${USER_NAME}/.cargo/bin/cargo install mdbook
+
+USER ${USER_NAME}
