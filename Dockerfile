@@ -79,9 +79,6 @@ RUN asfald https://github.com/NeuralNomadsAI/CodeNomad/releases/download/v0.6.0/
 RUN mv /tmp/CodeNomad*.AppImage /usr/local/bin && chmod a+x /usr/local/bin/CodeNomad*.AppImage
 
 USER ${USER_NAME}
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN curl -sSL http://dioxus.dev/install.sh | bash
-RUN bash -c "/home/${USER_NAME}/.cargo/bin/rustup component add rust-analyzer"
 #RUN curl -LsSf https://mistral.ai/vibe/install.sh | bash
 #RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin"
 
@@ -102,7 +99,6 @@ RUN echo "20260323"
 RUN npm install -g bun
 RUN bun add -g @openchamber/web
 RUN apt-get update && apt-get install -y antigravity chromium
-RUN npm install --global octofriend
 RUN npm install -g opkg
 RUN cd /tmp && asfald https://github.com/agavra/tuicr/releases/download/v0.5.0/tuicr-0.5.0-x86_64-unknown-linux-gnu.tar.gz && tar zxvf tuicr* && mv tuicr /usr/local/bin
 RUN echo "2" && npm i -g opencode-ai
@@ -112,13 +108,27 @@ USER ${USER_NAME}
 RUN mise use -g npm:ccusage
 #RUN mise use -g npm:@ccusage/opencode
 RUN mise use -g github:agavra/tuicr
-RUN mise use -g npm:dirac-cli
+RUN mise use -g npm:@playwright/cli@latest
+RUN playwright-cli install --skills
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN curl -fsSL https://raw.githubusercontent.com/earchibald/gemini-superpowers/main/install-superpowers.sh | bash
 
 
-RUN /home/$USER_NAME/.cargo/bin/cargo install --locked cargo-nextest
-RUN echo "PATH=$PATH:/home/${USER_NAME}/.local/bin:/home/${USER_NAME}/.cargo/bin" > /home/${USER_NAME}/.bashrc
-RUN /home/${USER_NAME}/.cargo/bin/cargo install mdbook
 
+USER root
+RUN apt-get install -y gettext libgtk-4-1 libevent-2.1  libwoff-dev
 USER ${USER_NAME}
+RUN mise use dotnet@8
+RUN mise use npm:po2json
+RUN dotnet new tool-manifest
+RUN dotnet tool install Microsoft.Playwright.CLI
+USER root
+RUN curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
+RUN usermod -aG docker $USER_NAME
+RUN usermod -aG systemd-network $USER_NAME
+USER root
+COPY tmp/bundled_root_scripts.sh .
+RUN  sh bundled_root_scripts.sh
+USER ${USER_NAME}
+COPY tmp/bundled_scripts.sh .
+RUN  sh bundled_scripts.sh

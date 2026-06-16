@@ -1,0 +1,1 @@
+mise use -g octofriend

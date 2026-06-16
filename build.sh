@@ -5,6 +5,9 @@ cd $SCRIPT_DIR
 
 . .env
 
+cat $SCRIPT_DIR/active_scripts/* >$SCRIPT_DIR/tmp/bundled_scripts.sh
+
+cat $SCRIPT_DIR/active_scripts/root/* >$SCRIPT_DIR/tmp/bundled_root_scripts.sh
 
 cp ~/local/bin/asfald .
 docker build \
