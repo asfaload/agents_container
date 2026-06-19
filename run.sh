@@ -40,7 +40,10 @@ docker run -it -v ${1:?pass directory with code as argument}:$1 \
   --env "SYNTHETIC_API_KEY=$SYNTHETIC_API_KEY" \
   --env DISPLAY=${DISPLAY} \
   --env QT_X11_NO_MITSHM=1 \
-  --workdir $1 \
+  --env MISE_DATA_DIR=/tmp/mise/data \
+  --env MISE_CACHE_DIR=/tmp/mise/cache \
+  --env MISE_CONFIG_DIR=/tmp/mise/config \
+  --workdir ${ARGS[0]} \
   --cap-add=SYS_ADMIN \
   --rm \
   $IMAGE_NAME /bin/bash
