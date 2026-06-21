@@ -46,11 +46,12 @@ claude.json
 
 Profiles live under `profiles/<name>/`. Each can have:
 
-| Directory | Purpose |
-|---|---|
-| `user_scripts/` | Scripts run as the `USER` during Docker build (concatenated and fed to `RUN sh bundled_scripts.sh`) |
-| `root_scripts/` | Scripts run as `root` during Docker build (concatenated and fed to `RUN sh bundled_root_scripts.sh`) |
-| `mounts/<path>` | Persistent runtime data mounted into the container at `$HOME/<path>` in the container (gitignored) |
+| Directory/File | Purpose |
+|---|---|---|
+| `user_scripts/` | Scripts run as the `USER` during Docker build (concatenated into `bundled_scripts.sh`) |
+| `root_scripts/` | Scripts run as `root` during Docker build (concatenated into `bundled_root_scripts.sh`) |
+| `container_scripts/` | Scripts run at container **startup** via ENTRYPOINT (concatenated into `bundled_container_scripts.sh`) |
+| `mounts/` | Persistent runtime data mounted into the container at `$HOME/<path>` (gitignored) |
 | `mounts.cfg` | Optional per-profile mount manifest (overrides `cfg/mounts.cfg`) |
 
 The `default` profile is used when no `--profile` flag is given.
@@ -62,7 +63,15 @@ The `default` profile is used when no `--profile` flag is given.
 ./build.sh --profile python         # build python profile (image tagged IMAGE_NAME-python)
 ```
 
-Each profile bundles its `user_scripts/` and `root_scripts/` into temporary files consumed by the Dockerfile. `cfg/env` is copied alongside each bundle and sourced (`. ./env`) so scripts have access to API keys and other environment variables at build time.
+Each profile bundles three script directories into temporary files consumed by the Dockerfile:
+
+| Bundle | Runs as | When |
+|---|---|---|
+| `bundled_scripts.sh` | `USER` | Image build (`RUN sh bundled_scripts.sh`) |
+| `bundled_root_scripts.sh` | `root` | Image build (`RUN sh bundled_root_scripts.sh`) |
+| `bundled_container_scripts.sh` | `USER` | Container startup (sourced by entrypoint before `exec "$@"`) |
+
+`cfg/env` is copied alongside each bundle and sourced (`. ./env` for build bundles, `. /tmp/env` for the container bundle) so scripts have access to API keys and other environment variables.
 
 ## Run
 
@@ -92,6 +101,8 @@ inside the container, which is a volume mounted from the host.
    - DRI devices (`/dev/dri/card0`, `/dev/dri/renderD128`)
    - `--device /dev/dri`, `--device /dev/snd`
    - `--shm-size 2gb`
+
+Before handing off to the shell, the ENTRYPOINT (`scripts/entrypoint.sh`) sources `bundled_container_scripts.sh`, so per-profile startup logic runs automatically and has access to `cfg/env` vars.
 
 The container runs as the host user (matching UID/GID from `cfg/env`) and drops you into a shell in the code directory.
 
