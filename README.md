@@ -23,21 +23,24 @@ export GEMINI_API_KEY=...
 
 Required by both `build.sh` and `run.sh`.
 
-### `cfg/mounts.cfg` — Global mount manifest
+### `mounts.cfg` — Mount manifest
 
-Defines the files and directories to create in every profile's `mounts/` directory. Lines ending in `/` are directories, otherwise files. `#` comments are ignored.
+`cfg/mounts.cfg` is the global manifest. A per-profile `profiles/<name>/mounts.cfg` overrides it if present. Entries support two forms:
+
+- **Relative paths** (no leading `/`): seeded inside `profiles/<name>/mounts/` and mounted at `$HOME/<name>` in the container. Trailing `/` creates directories, otherwise files.
+- **Absolute paths** (leading `/`): bind-mounted directly from host to container at the same path. Useful for devices, sockets, or any host resource.
 
 ```
+# Relative — creates in mounts/ dir, mounted at $HOME/.claude/
 .claude/
 .config/
-.local/
-.kilocode/
 claude.json
+
+# Absolute — bind-mounted host-to-container at the same path
+/var/run/docker.sock
+/dev/dri/card0
+/dev/dri/renderD128
 ```
-
-### `profiles/<name>/mounts.cfg` — Per-profile mount manifest
-
-If a profile directory contains its own `mounts.cfg`, it takes precedence over `cfg/mounts.cfg`. This lets different profiles seed different mount structures.
 
 ## Profiles
 
@@ -78,14 +81,15 @@ inside the container, which is a volume mounted from the host.
 ### Mounts
 
 1. The profile's `mounts/` directory is created if missing.
-2. If `profiles/<name>/mounts.cfg` exists, it seeds the directory structure; otherwise `cfg/mounts.cfg` is used.
-3. Every entry in the `mounts/` directory is mounted as `-v <entry>:/home/$user/<basename>`.
+2. The mount manifest is resolved: `profiles/<name>/mounts.cfg` if it exists, else `cfg/mounts.cfg`.
+3. Each manifest entry is processed:
+   - **Absolute paths** (starting with `/`): added as `-v /path:/path` bind mounts directly.
+   - **Relative paths**: created inside `profiles/<name>/mounts/` (dirs with `mkdir`, files with `touch`) then later mounted as `-v <entry>:/home/$user/<basename>`.
 4. Infrastructure mounts are added unconditionally:
    - Code directory (first argument)
    - `~/.config/nvim`
    - X11 socket (`/tmp/.X11-unix`)
    - DRI devices (`/dev/dri/card0`, `/dev/dri/renderD128`)
-   - Docker socket (`/var/run/docker.sock`)
    - `--device /dev/dri`, `--device /dev/snd`
    - `--shm-size 2gb`
 

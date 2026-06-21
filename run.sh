@@ -50,25 +50,28 @@ if [ ! -f "$MOUNTS_CFG" ]; then
   exit 1
 fi
 
+# Build docker args array early so absolute-path mounts can add to it
+DOCKER_ARGS=()
+
 while IFS= read -r line; do
   entry="${line%%#*}"
   entry="${entry#"${entry%%[![:space:]]*}"}"
   entry="${entry%"${entry##*[![:space:]]}"}"
   [ -z "$entry" ] && continue
-  if [[ "$entry" == */ ]]; then
+  if [[ "$entry" == /* ]]; then
+    # Absolute path: bind-mount host path at the same path in the container
+    DOCKER_ARGS+=(-v "${entry}:${entry}")
+  elif [[ "$entry" == */ ]]; then
     mkdir -p "$PROFILE_MOUNTS/$entry"
   else
     dir=$(dirname "$PROFILE_MOUNTS/$entry")
     mkdir -p "$dir"
     [ -f "$PROFILE_MOUNTS/$entry" ] || touch "$PROFILE_MOUNTS/$entry"
   fi
-done < "$MOUNTS_CFG"
+done <"$MOUNTS_CFG"
 
 # if user name is not set in env, set current user
 user_name=${USER_NAME:-$(id -u -n)}
-
-# Build docker args array
-DOCKER_ARGS=()
 
 # Mount profile-specific mounts
 for mount_entry in "$PROFILE_MOUNTS"/* "$PROFILE_MOUNTS"/.*; do
@@ -85,7 +88,6 @@ DOCKER_ARGS+=(
   -v /tmp/.X11-unix:/tmp/.X11-unix
   -v /dev/dri/card0:/dev/dri/card0
   -v /dev/dri/renderD128:/dev/dri/renderD128
-  -v /var/run/docker.sock:/var/run/docker.sock
   --device /dev/dri:/dev/dri
   --device /dev/snd:/dev/snd
   --shm-size '2gb'
