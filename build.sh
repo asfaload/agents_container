@@ -21,12 +21,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Determine profile directory and image tag
-if [ "$PROFILE" = "default" ]; then
-  PROFILE_DIR="$SCRIPT_DIR/active_scripts"
-  IMAGE_TAG="$IMAGE_NAME"
-else
-  PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
+PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
+IMAGE_TAG="$IMAGE_NAME"
+
+if [ "$PROFILE" != "default" ]; then
   IMAGE_TAG="${IMAGE_NAME}-${PROFILE}"
 fi
 
@@ -35,17 +33,21 @@ if [ ! -d "$PROFILE_DIR" ]; then
   exit 1
 fi
 
-# Bundle non-root scripts (only files, skip directories like 'root')
+# Bundle user scripts (only files, skip directories like 'root')
 : > "$SCRIPT_DIR/tmp/bundled_scripts.sh"
-for f in "$PROFILE_DIR"/*; do
-  [ -f "$f" ] && cat "$f" >> "$SCRIPT_DIR/tmp/bundled_scripts.sh"
-done
+if [ -d "$PROFILE_DIR/user_scripts" ]; then
+  for f in "$PROFILE_DIR/user_scripts"/*; do
+    [ -f "$f" ] && cat "$f" >> "$SCRIPT_DIR/tmp/bundled_scripts.sh"
+  done
+fi
 
 # Bundle root scripts
 : > "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
-for f in "$PROFILE_DIR"/root/*; do
-  [ -f "$f" ] && cat "$f" >> "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
-done
+if [ -d "$PROFILE_DIR/root_scripts" ]; then
+  for f in "$PROFILE_DIR/root_scripts"/*; do
+    [ -f "$f" ] && cat "$f" >> "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
+  done
+fi
 
 cp ~/local/bin/asfald .
 docker build \

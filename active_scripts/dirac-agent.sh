@@ -1,1 +1,0 @@
-../scripts/dirac-agent.sh
