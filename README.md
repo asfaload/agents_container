@@ -62,7 +62,7 @@ The `default` profile is used when no `--profile` flag is given.
 ./build.sh --profile python         # build python profile (image tagged IMAGE_NAME-python)
 ```
 
-Each profile bundles its `user_scripts/` and `root_scripts/` into temporary files consumed by the Dockerfile.
+Each profile bundles its `user_scripts/` and `root_scripts/` into temporary files consumed by the Dockerfile. `cfg/env` is copied alongside each bundle and sourced (`. ./env`) so scripts have access to API keys and other environment variables at build time.
 
 ## Run
 
