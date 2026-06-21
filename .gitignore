@@ -5,6 +5,7 @@ kilocode_config/
 dot_claude
 claude.json
 profiles/*/mounts/
+profiles/*/mounts.cfg
 profiles/mounts.cfg
 cfg/env
 cfg/mounts.cfg

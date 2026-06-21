@@ -39,9 +39,14 @@ PROFILE_MOUNTS="$PROFILE_DIR/mounts"
 mkdir -p "$PROFILE_MOUNTS"
 
 # Create standard mounts from manifest if they don't exist
-MOUNTS_CFG="$SCRIPT_DIR/cfg/mounts.cfg"
+# Per-profile mounts.cfg takes precedence over cfg/mounts.cfg
+if [ -f "$PROFILE_DIR/mounts.cfg" ]; then
+  MOUNTS_CFG="$PROFILE_DIR/mounts.cfg"
+else
+  MOUNTS_CFG="$SCRIPT_DIR/cfg/mounts.cfg"
+fi
 if [ ! -f "$MOUNTS_CFG" ]; then
-  echo "cfg/mounts.cfg not found. Copy cfg/mounts.cfg.sample to cfg/mounts.cfg and customize it." >&2
+  echo "mounts.cfg not found (tried $MOUNTS_CFG). Copy cfg/mounts.cfg.sample to cfg/mounts.cfg and customize it." >&2
   exit 1
 fi
 
