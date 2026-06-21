@@ -1,1 +1,0 @@
-../../../scripts/root/latex.sh

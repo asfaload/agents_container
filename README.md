@@ -47,14 +47,19 @@ claude.json
 Profiles live under `profiles/<name>/`. Each can have:
 
 | Directory/File | Purpose |
-|---|---|---|
-| `user_scripts/` | Scripts run as the `USER` during Docker build (concatenated into `bundled_scripts.sh`) |
-| `root_scripts/` | Scripts run as `root` during Docker build (concatenated into `bundled_root_scripts.sh`) |
-| `container_scripts/` | Scripts run at container **startup** via ENTRYPOINT (concatenated into `bundled_container_scripts.sh`) |
+|---|---|
 | `mounts/` | Persistent runtime data mounted into the container at `$HOME/<path>` (gitignored) |
 | `mounts.cfg` | Optional per-profile mount manifest (overrides `cfg/mounts.cfg`) |
 
 The `default` profile is used when no `--profile` flag is given.
+
+Scripts are shared across all profiles under `scripts/`:
+
+| Directory | Purpose |
+|---|---|
+| `scripts/user_scripts/` | Scripts run as `USER` during Docker build (→ `bundled_scripts.sh`) |
+| `scripts/root_scripts/` | Scripts run as `root` during Docker build (→ `bundled_root_scripts.sh`) |
+| `scripts/container_scripts/` | Scripts run at container **startup** via ENTRYPOINT (→ `bundled_container_scripts.sh`) |
 
 ## Build
 
@@ -63,7 +68,7 @@ The `default` profile is used when no `--profile` flag is given.
 ./build.sh --profile python         # build python profile (image tagged IMAGE_NAME-python)
 ```
 
-Each profile bundles three script directories into temporary files consumed by the Dockerfile:
+All profiles share the same set of scripts from `scripts/`, bundled into temporary files consumed by the Dockerfile:
 
 | Bundle | Runs as | When |
 |---|---|---|

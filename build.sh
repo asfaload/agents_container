@@ -41,11 +41,16 @@ fi
 # Make cfg/env available inside the container for bundled scripts
 cp "$SCRIPT_DIR/cfg/env" "$SCRIPT_DIR/tmp/env"
 
-# Bundle user scripts (only files, skip directories like 'root')
+# Shared script directories (all profiles use the same set)
+SCRIPTS_USER="$SCRIPT_DIR/scripts/user_scripts"
+SCRIPTS_ROOT="$SCRIPT_DIR/scripts/root_scripts"
+SCRIPTS_CONTAINER="$SCRIPT_DIR/scripts/container_scripts"
+
+# Bundle user scripts
 USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts-${PROFILE}.sh"
 printf '. ./env\n' > "$USER_BUNDLE"
-if [ -d "$PROFILE_DIR/user_scripts" ]; then
-  for f in "$PROFILE_DIR/user_scripts"/*; do
+if [ -d "$SCRIPTS_USER" ]; then
+  for f in "$SCRIPTS_USER"/*; do
     [ -f "$f" ] && cat "$f" >> "$USER_BUNDLE"
   done
 fi
@@ -53,15 +58,25 @@ fi
 # Bundle root scripts
 ROOT_BUNDLE="$SCRIPT_DIR/tmp/bundled_root_scripts-${PROFILE}.sh"
 printf '. ./env\n' > "$ROOT_BUNDLE"
-if [ -d "$PROFILE_DIR/root_scripts" ]; then
-  for f in "$PROFILE_DIR/root_scripts"/*; do
+if [ -d "$SCRIPTS_ROOT" ]; then
+  for f in "$SCRIPTS_ROOT"/*; do
     [ -f "$f" ] && cat "$f" >> "$ROOT_BUNDLE"
+  done
+fi
+
+# Bundle container startup scripts (runs as ENTRYPOINT at container start)
+CONTAINER_BUNDLE="$SCRIPT_DIR/tmp/bundled_container_scripts-${PROFILE}.sh"
+printf '. /tmp/env\n' > "$CONTAINER_BUNDLE"
+if [ -d "$SCRIPTS_CONTAINER" ]; then
+  for f in "$SCRIPTS_CONTAINER"/*; do
+    [ -f "$f" ] && cat "$f" >> "$CONTAINER_BUNDLE"
   done
 fi
 
 # Copy to fixed names expected by Dockerfile
 cp "$USER_BUNDLE" "$SCRIPT_DIR/tmp/bundled_scripts.sh"
 cp "$ROOT_BUNDLE" "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
+cp "$CONTAINER_BUNDLE" "$SCRIPT_DIR/tmp/bundled_container_scripts.sh"
 
 cp ~/local/bin/asfald .
 docker build \
