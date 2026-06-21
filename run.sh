@@ -2,7 +2,7 @@
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
-. .env
+. cfg/env
 set -eux
 
 PROFILE="default"
@@ -34,9 +34,9 @@ PROFILE_MOUNTS="$PROFILE_DIR/mounts"
 mkdir -p "$PROFILE_MOUNTS"
 
 # Create standard mounts from manifest if they don't exist
-MOUNTS_CFG="$SCRIPT_DIR/profiles/mounts.cfg"
+MOUNTS_CFG="$SCRIPT_DIR/cfg/mounts.cfg"
 if [ ! -f "$MOUNTS_CFG" ]; then
-  MOUNTS_CFG="$SCRIPT_DIR/profiles/mounts.cfg.sample"
+  MOUNTS_CFG="$SCRIPT_DIR/cfg/mounts.cfg.sample"
 fi
 if [ -f "$MOUNTS_CFG" ]; then
   while IFS= read -r line; do

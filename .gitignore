@@ -6,3 +6,5 @@ dot_claude
 claude.json
 profiles/*/mounts/
 profiles/mounts.cfg
+cfg/env
+cfg/mounts.cfg
