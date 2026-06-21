@@ -127,8 +127,8 @@ RUN curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docke
 RUN usermod -aG docker $USER_NAME
 RUN usermod -aG systemd-network $USER_NAME
 USER root
-COPY tmp/bundled_root_scripts.sh .
+COPY tmp/env tmp/bundled_root_scripts.sh .
 RUN  sh bundled_root_scripts.sh
 USER ${USER_NAME}
-COPY tmp/bundled_scripts.sh .
+COPY tmp/env tmp/bundled_scripts.sh .
 RUN  sh bundled_scripts.sh

@@ -38,9 +38,12 @@ if [ ! -d "$PROFILE_DIR" ]; then
   exit 1
 fi
 
+# Make cfg/env available inside the container for bundled scripts
+cp "$SCRIPT_DIR/cfg/env" "$SCRIPT_DIR/tmp/env"
+
 # Bundle user scripts (only files, skip directories like 'root')
 USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts-${PROFILE}.sh"
-: > "$USER_BUNDLE"
+printf '. ./env\n' > "$USER_BUNDLE"
 if [ -d "$PROFILE_DIR/user_scripts" ]; then
   for f in "$PROFILE_DIR/user_scripts"/*; do
     [ -f "$f" ] && cat "$f" >> "$USER_BUNDLE"
@@ -49,7 +52,7 @@ fi
 
 # Bundle root scripts
 ROOT_BUNDLE="$SCRIPT_DIR/tmp/bundled_root_scripts-${PROFILE}.sh"
-: > "$ROOT_BUNDLE"
+printf '. ./env\n' > "$ROOT_BUNDLE"
 if [ -d "$PROFILE_DIR/root_scripts" ]; then
   for f in "$PROFILE_DIR/root_scripts"/*; do
     [ -f "$f" ] && cat "$f" >> "$ROOT_BUNDLE"
