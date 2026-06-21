@@ -34,20 +34,26 @@ if [ ! -d "$PROFILE_DIR" ]; then
 fi
 
 # Bundle user scripts (only files, skip directories like 'root')
-: > "$SCRIPT_DIR/tmp/bundled_scripts.sh"
+USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts-${PROFILE}.sh"
+: > "$USER_BUNDLE"
 if [ -d "$PROFILE_DIR/user_scripts" ]; then
   for f in "$PROFILE_DIR/user_scripts"/*; do
-    [ -f "$f" ] && cat "$f" >> "$SCRIPT_DIR/tmp/bundled_scripts.sh"
+    [ -f "$f" ] && cat "$f" >> "$USER_BUNDLE"
   done
 fi
 
 # Bundle root scripts
-: > "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
+ROOT_BUNDLE="$SCRIPT_DIR/tmp/bundled_root_scripts-${PROFILE}.sh"
+: > "$ROOT_BUNDLE"
 if [ -d "$PROFILE_DIR/root_scripts" ]; then
   for f in "$PROFILE_DIR/root_scripts"/*; do
-    [ -f "$f" ] && cat "$f" >> "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
+    [ -f "$f" ] && cat "$f" >> "$ROOT_BUNDLE"
   done
 fi
+
+# Copy to fixed names expected by Dockerfile
+cp "$USER_BUNDLE" "$SCRIPT_DIR/tmp/bundled_scripts.sh"
+cp "$ROOT_BUNDLE" "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
 
 cp ~/local/bin/asfald .
 docker build \
