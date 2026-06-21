@@ -61,10 +61,6 @@ RUN mise use -g github:agavra/tuicr
 
 
 USER root
-RUN curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
-RUN usermod -aG docker $USER_NAME
-RUN usermod -aG systemd-network $USER_NAME
-USER root
 COPY tmp/env tmp/bundled_root_scripts.sh .
 RUN  bash bundled_root_scripts.sh
 USER ${USER_NAME}
