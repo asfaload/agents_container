@@ -3,40 +3,99 @@
 Docker image containing multiple AI coding agents and development tools.
 Tested and used on a Linux host with X11.
 
-This is the image I use daily to work on [Afasign](https://github.com/asfaload/asfasign), so it includes
-tools I need that you might not need. If there is interest, I can make it more generally useful, so let me know in the issues.
-Until then, I'll keep my personal needs as the defaults in this config.
+Includes Claude Code, Codex, opencode (+ codenomad and openchamber), kilocode, Antigravity, mistral-vibe, and others. Languages and tools: Node.js 24, Rust, Bun, ripgrep, git, asfald, Google Chrome.
 
-Includes Claude Code, Codex, opencode(+ codenomad and openchamber), kilocode , Antigravity, mistral-vibe, possibly others if they
-were added after this README's last update.
+## Configuration
 
-With some languages and tools: Node.js 24, Rust, Bun, ripgrep, git, asfald (downloader), google chrome
+### `cfg/env` — Environment variables
 
-# How to use
+Copy `cfg/env.sample` to `cfg/env` and fill in your API keys:
 
-The file `cfg/env.sample` has a list of environent variables that are used.
-Copy it to `cfg/env` and edit it with your keys and information, notably the
- API keys for the AI agents you want to use.
-
-
-## Build the Docker image
-
-```bash
-./build.sh
+```
+export USER_NAME=$(id -u -n)
+export USER_ID=$(id -u)
+export USER_GROUP=$(id -g)
+export IMAGE_NAME=ai_agents_${USER_NAME}
+export ANTHROPIC_API_KEY=...
+export GEMINI_API_KEY=...
+...
 ```
 
+Required by both `build.sh` and `run.sh`.
+
+### `cfg/mounts.cfg` — Global mount manifest
+
+Defines the files and directories to create in every profile's `mounts/` directory. Lines ending in `/` are directories, otherwise files. `#` comments are ignored.
+
+```
+.claude/
+.config/
+.local/
+.kilocode/
+claude.json
+```
+
+### `profiles/<name>/mounts.cfg` — Per-profile mount manifest
+
+If a profile directory contains its own `mounts.cfg`, it takes precedence over `cfg/mounts.cfg`. This lets different profiles seed different mount structures.
+
+## Profiles
+
+Profiles live under `profiles/<name>/`. Each can have:
+
+| Directory | Purpose |
+|---|---|
+| `user_scripts/` | Scripts run as the `USER` during Docker build (concatenated and fed to `RUN sh bundled_scripts.sh`) |
+| `root_scripts/` | Scripts run as `root` during Docker build (concatenated and fed to `RUN sh bundled_root_scripts.sh`) |
+| `mounts/<path>` | Persistent runtime data mounted into the container at `$HOME/<path>` in the container (gitignored) |
+| `mounts.cfg` | Optional per-profile mount manifest (overrides `cfg/mounts.cfg`) |
+
+The `default` profile is used when no `--profile` flag is given.
+
+## Build
+
+```bash
+./build.sh                          # build default profile
+./build.sh --profile python         # build python profile (image tagged IMAGE_NAME-python)
+```
+
+Each profile bundles its `user_scripts/` and `root_scripts/` into temporary files consumed by the Dockerfile.
 
 ## Run
 
 ```bash
-./run.sh /absolute/path/to/your/code
+./run.sh /path/to/code              # run default profile
+./run.sh --profile python /path/to/code   # run python profile
 ```
 
-You get a shell in the container in the souce code directory. From there you can start the agent you want.
 
-The container mounts:
-- Your code directory at the same location as on your host
-- Agents config directories (persisted locally)
-- X11/DRI for GUI applications
+You are dropped in a shell inside the container in `/path/to/code`.
 
-The container matches host user permissions via `USER_NAME`, `USER_ID`, `USER_GROUP` (defaults to current user).
+For example, if your code is in `~/gits/myproject` running `./run.sh
+~/gits/myproject` will start a container and place you in `~/gits/myproject`
+inside the container, which is a volume mounted from the host.
+
+### Mounts
+
+1. The profile's `mounts/` directory is created if missing.
+2. If `profiles/<name>/mounts.cfg` exists, it seeds the directory structure; otherwise `cfg/mounts.cfg` is used.
+3. Every entry in the `mounts/` directory is mounted as `-v <entry>:/home/$user/<basename>`.
+4. Infrastructure mounts are added unconditionally:
+   - Code directory (first argument)
+   - `~/.config/nvim`
+   - X11 socket (`/tmp/.X11-unix`)
+   - DRI devices (`/dev/dri/card0`, `/dev/dri/renderD128`)
+   - Docker socket (`/var/run/docker.sock`)
+   - `--device /dev/dri`, `--device /dev/snd`
+   - `--shm-size 2gb`
+
+The container runs as the host user (matching UID/GID from `cfg/env`) and drops you into a shell in the code directory.
+
+## `.gitignore`
+
+```
+cfg/env                     # User-specific API keys and config
+cfg/mounts.cfg              # User-customized mount manifest
+profiles/*/mounts/          # Runtime agent state (credentials, caches)
+profiles/*/mounts.cfg       # Per-profile mount manifest
+```
