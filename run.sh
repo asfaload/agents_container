@@ -2,6 +2,11 @@
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
+if [ ! -f cfg/env ]; then
+  echo "cfg/env not found. Copy cfg/env.sample to cfg/env and configure it." >&2
+  exit 1
+fi
+
 . cfg/env
 set -eux
 
@@ -36,23 +41,23 @@ mkdir -p "$PROFILE_MOUNTS"
 # Create standard mounts from manifest if they don't exist
 MOUNTS_CFG="$SCRIPT_DIR/cfg/mounts.cfg"
 if [ ! -f "$MOUNTS_CFG" ]; then
-  MOUNTS_CFG="$SCRIPT_DIR/cfg/mounts.cfg.sample"
+  echo "cfg/mounts.cfg not found. Copy cfg/mounts.cfg.sample to cfg/mounts.cfg and customize it." >&2
+  exit 1
 fi
-if [ -f "$MOUNTS_CFG" ]; then
-  while IFS= read -r line; do
-    entry="${line%%#*}"
-    entry="${entry#"${entry%%[![:space:]]*}"}"
-    entry="${entry%"${entry##*[![:space:]]}"}"
-    [ -z "$entry" ] && continue
-    if [[ "$entry" == */ ]]; then
-      mkdir -p "$PROFILE_MOUNTS/$entry"
-    else
-      dir=$(dirname "$PROFILE_MOUNTS/$entry")
-      mkdir -p "$dir"
-      [ -f "$PROFILE_MOUNTS/$entry" ] || touch "$PROFILE_MOUNTS/$entry"
-    fi
-  done < "$MOUNTS_CFG"
-fi
+
+while IFS= read -r line; do
+  entry="${line%%#*}"
+  entry="${entry#"${entry%%[![:space:]]*}"}"
+  entry="${entry%"${entry##*[![:space:]]}"}"
+  [ -z "$entry" ] && continue
+  if [[ "$entry" == */ ]]; then
+    mkdir -p "$PROFILE_MOUNTS/$entry"
+  else
+    dir=$(dirname "$PROFILE_MOUNTS/$entry")
+    mkdir -p "$dir"
+    [ -f "$PROFILE_MOUNTS/$entry" ] || touch "$PROFILE_MOUNTS/$entry"
+  fi
+done < "$MOUNTS_CFG"
 
 # if user name is not set in env, set current user
 user_name=${USER_NAME:-$(id -u -n)}

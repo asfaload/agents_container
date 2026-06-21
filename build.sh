@@ -3,6 +3,11 @@
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 cd "$SCRIPT_DIR"
 
+if [ ! -f cfg/env ]; then
+  echo "cfg/env not found. Copy cfg/env.sample to cfg/env and configure it." >&2
+  exit 1
+fi
+
 . cfg/env
 
 PROFILE="default"
