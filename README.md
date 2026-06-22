@@ -84,7 +84,7 @@ All profiles share the same set of scripts from `scripts/`, bundled into tempora
 | `bundled_root_scripts.sh` | `root` | Image build (`RUN sh bundled_root_scripts.sh`) |
 | `bundled_container_scripts.sh` | `USER` | Container startup (sourced by entrypoint before `exec "$@"`) |
 
-`cfg/env` is copied alongside each bundle and sourced (`. ./env` for build bundles, `. /tmp/env` for the container bundle) so scripts have access to API keys and other environment variables.
+`cfg/env` is copied alongside root and user build bundles and sourced (`. ./env`) so scripts have access to API keys during image build. After execution, `env` and the bundle are deleted to avoid baking secrets into the image. The container startup bundle (`bundled_container_scripts.sh`) does **not** receive a copy of `env` — runtime environment variables are passed via `docker run --env` in `run.sh`.
 
 ## Run
 
