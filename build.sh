@@ -3,6 +3,13 @@
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 cd "$SCRIPT_DIR"
 
+validate_profile_name() {
+  if ! [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    echo "Error: invalid profile name '$1'. Use only alphanumeric characters, hyphens, and underscores." >&2
+    exit 1
+  fi
+}
+
 if [ ! -f cfg/env ]; then
   echo "cfg/env not found. Copy cfg/env.sample to cfg/env and configure it." >&2
   exit 1
@@ -25,6 +32,8 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+validate_profile_name "$PROFILE"
 
 PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
 IMAGE_TAG="$IMAGE_NAME"
