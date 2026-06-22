@@ -84,7 +84,6 @@ done
 # Infrastructure mounts (not profile-specific)
 DOCKER_ARGS+=(
   -v "${ARGS[0]:?pass directory with code as argument}:${ARGS[0]}"
-  -v ~/.config/nvim:/home/${user_name}/.config/nvim
   -v /tmp/.X11-unix:/tmp/.X11-unix
   -v /dev/dri/card0:/dev/dri/card0
   -v /dev/dri/renderD128:/dev/dri/renderD128
