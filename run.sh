@@ -82,7 +82,7 @@ done <"$MOUNTS_CFG"
 # if user name is not set in env, set current user
 user_name=${USER_NAME:-$(id -u -n)}
 
-# Mount profile-specific mounts
+# Mount profile-specific mounts (all files/dirs under mounts/ are mounted — not just those from mounts.cfg)
 for mount_entry in "$PROFILE_MOUNTS"/* "$PROFILE_MOUNTS"/.*; do
   [ -e "$mount_entry" ] || continue
   rel_path=$(basename "$mount_entry")
