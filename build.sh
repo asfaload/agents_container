@@ -41,10 +41,10 @@ fi
 # Make cfg/env available inside the container for bundled scripts
 cp "$SCRIPT_DIR/cfg/env" "$SCRIPT_DIR/tmp/env"
 
-# Shared script directories (all profiles use the same set)
-SCRIPTS_USER="$SCRIPT_DIR/scripts/user_scripts"
-SCRIPTS_ROOT="$SCRIPT_DIR/scripts/root_scripts"
-SCRIPTS_CONTAINER="$SCRIPT_DIR/scripts/container_scripts"
+# Profile-specific script directories (each profile declares what it needs)
+SCRIPTS_USER="$PROFILE_DIR/user_scripts"
+SCRIPTS_ROOT="$PROFILE_DIR/root_scripts"
+SCRIPTS_CONTAINER="$PROFILE_DIR/container_scripts"
 
 # Bundle user scripts
 USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts-${PROFILE}.sh"
