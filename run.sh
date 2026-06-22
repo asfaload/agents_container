@@ -13,6 +13,13 @@ set -eux
 PROFILE="default"
 ARGS=()
 
+validate_profile_name() {
+  if ! [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    echo "Error: invalid profile name '$1'. Use only alphanumeric characters, hyphens, and underscores." >&2
+    exit 1
+  fi
+}
+
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -26,6 +33,8 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+
+validate_profile_name "$PROFILE"
 
 PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
 IMAGE_TAG="$IMAGE_NAME"
