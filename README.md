@@ -61,6 +61,14 @@ Scripts are shared across all profiles under `scripts/`:
 | `scripts/root_scripts/` | Scripts run as `root` during Docker build (→ `bundled_root_scripts.sh`) |
 | `scripts/container_scripts/` | Scripts run at container **startup** via ENTRYPOINT (→ `bundled_container_scripts.sh`) |
 
+### `utils/init_profile.sh` — Scaffold a new profile
+
+```bash
+./utils/init_profile.sh <name>
+```
+
+Creates `profiles/<name>/` with all standard subdirectories (`mounts/`, `container_scripts/`, `root_scripts/`, `user_scripts/`) and copies `cfg/mounts.cfg.sample` as `profiles/<name>/mounts.cfg`.
+
 ## Build
 
 ```bash
