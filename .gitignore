@@ -9,3 +9,4 @@ profiles/*/mounts.cfg
 profiles/mounts.cfg
 cfg/env
 cfg/mounts.cfg
+scripts/user_scripts/git-config.sh
