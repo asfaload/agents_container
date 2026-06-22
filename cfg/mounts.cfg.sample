@@ -1,0 +1,8 @@
+# Standard profile mounts
+# Directories (trailing /)
+.claude/
+.config/
+.local/
+.kilocode/
+# Files
+claude.json
