@@ -53,14 +53,14 @@ RUN mise use -g github:agavra/tuicr
 
 USER root
 COPY tmp/env tmp/bundled_root_scripts.sh .
-RUN  bash bundled_root_scripts.sh
+RUN  bash bundled_root_scripts.sh && rm -f env bundled_root_scripts.sh
 USER ${USER_NAME}
 COPY tmp/env tmp/bundled_scripts.sh .
-RUN  bash bundled_scripts.sh
+RUN  bash bundled_scripts.sh && rm -f env bundled_scripts.sh
 
 USER root
 COPY scripts/entrypoint.sh /entrypoint.sh
-COPY tmp/env tmp/bundled_container_scripts.sh .
+COPY tmp/bundled_container_scripts.sh .
 RUN chmod +x /entrypoint.sh
 USER ${USER_NAME}
 ENTRYPOINT ["/entrypoint.sh"]

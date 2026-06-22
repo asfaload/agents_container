@@ -78,7 +78,6 @@ fi
 
 # Bundle container startup scripts (runs as ENTRYPOINT at container start)
 CONTAINER_BUNDLE="$SCRIPT_DIR/tmp/bundled_container_scripts.sh"
-printf '. /tmp/env\n' > "$CONTAINER_BUNDLE"
 if [ -d "$SCRIPTS_CONTAINER" ]; then
   for f in "$SCRIPTS_CONTAINER"/*; do
     [ -f "$f" ] && cat "$f" >> "$CONTAINER_BUNDLE"
