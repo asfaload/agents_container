@@ -22,4 +22,8 @@ mkdir -p "$PROFILE_DIR/user_scripts"
 
 cp "$SCRIPT_DIR/cfg/mounts.cfg.sample" "$PROFILE_DIR/mounts.cfg"
 
+ln -sfr "$SCRIPT_DIR/scripts/user_scripts/ccusage.sh" "$PROFILE_DIR/user_scripts/ccusage.sh"
+ln -sfr "$SCRIPT_DIR/scripts/root_scripts/opencode.sh" "$PROFILE_DIR/root_scripts/opencode.sh"
+ln -sfr "$SCRIPT_DIR/scripts/container_scripts/opencode-superpowers.sh" "$PROFILE_DIR/container_scripts/opencode-superpowers.sh"
+
 echo "Profile '$PROFILE' created at $PROFILE_DIR"
