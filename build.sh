@@ -47,6 +47,9 @@ if [ ! -d "$PROFILE_DIR" ]; then
   exit 1
 fi
 
+# Ensure tmp directory exists
+mkdir -p "$SCRIPT_DIR/tmp"
+
 # Make cfg/env available inside the container for bundled scripts
 cp "$SCRIPT_DIR/cfg/env" "$SCRIPT_DIR/tmp/env"
 
@@ -56,7 +59,7 @@ SCRIPTS_ROOT="$PROFILE_DIR/root_scripts"
 SCRIPTS_CONTAINER="$PROFILE_DIR/container_scripts"
 
 # Bundle user scripts
-USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts-${PROFILE}.sh"
+USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts.sh"
 printf '. ./env\n' > "$USER_BUNDLE"
 if [ -d "$SCRIPTS_USER" ]; then
   for f in "$SCRIPTS_USER"/*; do
@@ -65,7 +68,7 @@ if [ -d "$SCRIPTS_USER" ]; then
 fi
 
 # Bundle root scripts
-ROOT_BUNDLE="$SCRIPT_DIR/tmp/bundled_root_scripts-${PROFILE}.sh"
+ROOT_BUNDLE="$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
 printf '. ./env\n' > "$ROOT_BUNDLE"
 if [ -d "$SCRIPTS_ROOT" ]; then
   for f in "$SCRIPTS_ROOT"/*; do
@@ -74,7 +77,7 @@ if [ -d "$SCRIPTS_ROOT" ]; then
 fi
 
 # Bundle container startup scripts (runs as ENTRYPOINT at container start)
-CONTAINER_BUNDLE="$SCRIPT_DIR/tmp/bundled_container_scripts-${PROFILE}.sh"
+CONTAINER_BUNDLE="$SCRIPT_DIR/tmp/bundled_container_scripts.sh"
 printf '. /tmp/env\n' > "$CONTAINER_BUNDLE"
 if [ -d "$SCRIPTS_CONTAINER" ]; then
   for f in "$SCRIPTS_CONTAINER"/*; do
@@ -82,12 +85,6 @@ if [ -d "$SCRIPTS_CONTAINER" ]; then
   done
 fi
 
-# Copy to fixed names expected by Dockerfile
-cp "$USER_BUNDLE" "$SCRIPT_DIR/tmp/bundled_scripts.sh"
-cp "$ROOT_BUNDLE" "$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
-cp "$CONTAINER_BUNDLE" "$SCRIPT_DIR/tmp/bundled_container_scripts.sh"
-
-cp ~/local/bin/asfald .
 docker build \
   -t "$IMAGE_TAG" \
   --build-arg USER_NAME \
