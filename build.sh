@@ -47,11 +47,18 @@ if [ ! -d "$PROFILE_DIR" ]; then
   exit 1
 fi
 
-# Ensure tmp directory exists
-mkdir -p "$SCRIPT_DIR/tmp"
+# Create a unique, isolated build context per invocation so parallel profile builds don't collide
+BUILD_DIR=$(mktemp -d "$SCRIPT_DIR/tmp/build_${PROFILE}_XXXXXXXX")
+trap 'rm -rf "$BUILD_DIR"' EXIT
+
+mkdir -p "$BUILD_DIR/tmp"
+mkdir -p "$BUILD_DIR/scripts"
+
+cp "$SCRIPT_DIR/Dockerfile" "$BUILD_DIR/"
+cp "$SCRIPT_DIR/scripts/entrypoint.sh" "$BUILD_DIR/scripts/"
 
 # Make cfg/env available inside the container for bundled scripts
-cp "$SCRIPT_DIR/cfg/env" "$SCRIPT_DIR/tmp/env"
+cp "$SCRIPT_DIR/cfg/env" "$BUILD_DIR/tmp/env"
 
 # Profile-specific script directories (each profile declares what it needs)
 SCRIPTS_USER="$PROFILE_DIR/user_scripts"
@@ -59,7 +66,7 @@ SCRIPTS_ROOT="$PROFILE_DIR/root_scripts"
 SCRIPTS_CONTAINER="$PROFILE_DIR/container_scripts"
 
 # Bundle user scripts
-USER_BUNDLE="$SCRIPT_DIR/tmp/bundled_scripts.sh"
+USER_BUNDLE="$BUILD_DIR/tmp/bundled_scripts.sh"
 printf '. ./env\n' > "$USER_BUNDLE"
 if [ -d "$SCRIPTS_USER" ]; then
   for f in "$SCRIPTS_USER"/*; do
@@ -68,7 +75,7 @@ if [ -d "$SCRIPTS_USER" ]; then
 fi
 
 # Bundle root scripts
-ROOT_BUNDLE="$SCRIPT_DIR/tmp/bundled_root_scripts.sh"
+ROOT_BUNDLE="$BUILD_DIR/tmp/bundled_root_scripts.sh"
 printf '. ./env\n' > "$ROOT_BUNDLE"
 if [ -d "$SCRIPTS_ROOT" ]; then
   for f in "$SCRIPTS_ROOT"/*; do
@@ -77,7 +84,7 @@ if [ -d "$SCRIPTS_ROOT" ]; then
 fi
 
 # Bundle container startup scripts (runs as ENTRYPOINT at container start)
-CONTAINER_BUNDLE="$SCRIPT_DIR/tmp/bundled_container_scripts.sh"
+CONTAINER_BUNDLE="$BUILD_DIR/tmp/bundled_container_scripts.sh"
 if [ -d "$SCRIPTS_CONTAINER" ]; then
   for f in "$SCRIPTS_CONTAINER"/*; do
     [ -f "$f" ] && cat "$f" >> "$CONTAINER_BUNDLE"
@@ -89,4 +96,4 @@ docker build \
   --build-arg USER_NAME \
   --build-arg USER_ID \
   --build-arg USER_GROUP \
-  .
+  "$BUILD_DIR"
