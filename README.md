@@ -1,9 +1,57 @@
 # AI Agents Image
 
-Docker image containing multiple AI coding agents and development tools.
-Tested and used on a Linux host with X11.
+These are the scripts I use to run AI agents in containers on a linux machine
+with X11 (the X11 part is only relevant for running graphical tools, if you're
+running in the terminal, it is probably irrelevant).
 
-Includes Claude Code, Codex, opencode (+ codenomad and openchamber), kilocode, Antigravity, mistral-vibe, and others. Languages and tools: Node.js 24, Rust, Bun, ripgrep, git, asfald, Google Chrome.
+I run it under different users on a linux box, for different projects requiring different tools and agents.
+
+## How to use
+```
+git clone https://github.com/asfaload/agents_container.git
+cd agents_container/cfg
+cp env.sample env
+# edit env and set environment variable as needed
+./build.sh --profile default
+./run.sh --profile default $PWD
+# opens container
+opencode
+```
+
+
+## Features
+
+It supports different profiles, generating one image per profile (with `build.sh --profile $my_profile`).
+Each profile defines:
+
+* what the image contains by running different scripts
+* the directories mounted from the host in the container (persisting configs and history)
+
+Software installation in the container is done with 3 types of scripts (each profile has their own):
+
+* root_scripts: these are executed as `root` at image build time.
+* user_scripts: these are run as the user at image build time.
+* container_scripts: these are run when the container is started. This is
+needed when you install an agent plugin that is added to the agent's config
+when it's persisted on the host (eg superpowers for opencode).
+
+Example scripts are available under `scripts/` and can be used from your profiles by soft linking them.
+
+Data persistence is done by mounting directories from the host in the
+container. These are defined in the file `mounts.cfg` in each profile. Relative
+paths (eg `.claude`) are created in the profile's `mounts` subdirectory, and
+mounted in the container under `$HOME`. Absolute paths  (eg
+`/var/run/docker.sock`) are mounted from the host to the same path in the
+container.
+
+You can create a new profile skeleton with `utils/init_profile.sh $my_profile` and tweak it in `profiles/$my_profile`.
+The profile is initialised with a `mounts.cfg` copied from `cfg/mounts.cfg.sample`. Edit it in the profile to tweak it.
+
+Environment variables are defined in `cfg/env` and are shared with all scripts (`build.sh`, `run.sh`, and profiles's scripts.)
+
+
+
+Further documentation below was mainly written by an LLM agent.
 
 ## Configuration
 
