@@ -55,7 +55,7 @@ USER root
 COPY tmp/env tmp/bundled_root_scripts.sh .
 RUN  bash bundled_root_scripts.sh && rm -f env bundled_root_scripts.sh
 USER ${USER_NAME}
-COPY tmp/env tmp/bundled_scripts.sh .
+COPY --chown=${USER_NAME} tmp/env tmp/bundled_scripts.sh .
 RUN  bash bundled_scripts.sh && rm -f env bundled_scripts.sh
 
 USER root
