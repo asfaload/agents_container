@@ -2,6 +2,20 @@
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
+show_help() {
+  cat <<EOF
+Usage: $(basename "$0") [options] <work-directory>
+
+Run the agents container with the given work directory mounted.
+
+Options:
+  --profile PROFILE   Use profile directory (default: "default")
+  --debug             Enable debug output
+  -h, --help          Show this help message and exit
+EOF
+  exit 0
+}
+
 if [ ! -f cfg/env ]; then
   echo "cfg/env not found. Copy cfg/env.sample to cfg/env and configure it." >&2
   exit 1
@@ -30,6 +44,9 @@ while [[ $# -gt 0 ]]; do
   --debug)
     set -x
     shift
+    ;;
+  -h|--help)
+    show_help
     ;;
   *)
     ARGS+=("$1")

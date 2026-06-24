@@ -3,6 +3,20 @@
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 cd "$SCRIPT_DIR"
 
+show_help() {
+  cat <<EOF
+Usage: $(basename "$0") [options]
+
+Build a Docker image for the agents container.
+
+Options:
+  --profile PROFILE   Use profile directory (default: "default")
+  --no-cache          Build without Docker cache
+  -h, --help          Show this help message and exit
+EOF
+  exit 0
+}
+
 validate_profile_name() {
   if ! [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]]; then
     echo "Error: invalid profile name '$1'. Use only alphanumeric characters, hyphens, and underscores." >&2
@@ -30,6 +44,9 @@ while [[ $# -gt 0 ]]; do
     --no-cache)
       NO_CACHE_FLAG="--no-cache"
       shift
+      ;;
+    -h|--help)
+      show_help
       ;;
     *)
       echo "Unknown option: $1"
