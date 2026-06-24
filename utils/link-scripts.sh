@@ -113,7 +113,7 @@ render_toggle_list() {
   local category="$1"
   local -n scripts_ref="$2"
   local -n toggles_ref="$3"
-  local i filename status
+  local i filename
 
   echo
   echo "=== $category ($(profile_script_dir_for "$category")) ==="
@@ -140,7 +140,7 @@ run_toggle_menu() {
   local category="$1"
   local -a scripts=()
   local -a toggles=()
-  local input num
+  local input num idx
 
   render_toggle_list "$category" scripts toggles
 
