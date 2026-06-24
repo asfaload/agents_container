@@ -4,7 +4,10 @@ These are the scripts I use to run AI agents in containers on a linux machine
 with X11 (the X11 part is only relevant for running graphical tools, if you're
 running in the terminal, it is probably irrelevant).
 
-I run it under different users on a linux box, for different projects requiring different tools and agents.
+It started as simple scripts to un agents in containers when developing
+[Asfaload](https://github.com/asfaload/asfaload), but improved when I started
+using it for multiple projects under different user accounts, and using
+different tech stacks.
 
 ## How to use
 ```
@@ -35,7 +38,12 @@ Software installation in the container is done with 3 types of scripts (each pro
 needed when you install an agent plugin that is added to the agent's config
 when it's persisted on the host (eg superpowers for opencode).
 
-Example scripts are available under `scripts/` and can be used from your profiles by soft linking them.
+Sample scripts are available under `scripts/` and can be used from your profiles by soft linking them.
+Don't hesitate to contribute new scripts.
+
+When using scripts in your profiles, you can order there execution by naming
+them accordingly (see an example in the [Asfaload
+profile](https://github.com/asfaload/agents_container/tree/master/profiles/asfaload/user_scripts))
 
 Data persistence is done by mounting directories from the host in the
 container. These are defined in the file `mounts.cfg` in each profile. Relative
