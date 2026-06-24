@@ -24,6 +24,43 @@ EOF
   exit 0
 }
 
+script_dir_for() {
+  echo "$SCRIPTS_DIR/$1"
+}
+
+profile_script_dir_for() {
+  echo "$PROFILE_DIR/$1"
+}
+
+list_available_scripts() {
+  local dir
+  dir=$(script_dir_for "$1")
+  if [ -d "$dir" ]; then
+    for f in "$dir"/*.sh; do
+      [ -f "$f" ] && basename "$f"
+    done
+  fi
+}
+
+list_linked_scripts() {
+  local dir
+  dir=$(profile_script_dir_for "$1")
+  if [ -d "$dir" ]; then
+    for f in "$dir"/*; do
+      if [ -L "$f" ]; then
+        basename "$f"
+      fi
+    done
+  fi
+}
+
+is_linked() {
+  local category="$1" filename="$2"
+  local target
+  target=$(profile_script_dir_for "$category")/"$filename"
+  [ -L "$target" ]
+}
+
 PROFILE=""
 
 while [[ $# -gt 0 ]]; do
