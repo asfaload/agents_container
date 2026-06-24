@@ -34,6 +34,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ ! "${#ARGS[@]}" -gt 0 ]]; then
+  echo "The script needs the work directory as argument. Give the absolute path to the directory to be mounted in the container"
+  exit 1
+fi
+
 validate_profile_name "$PROFILE"
 
 PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
