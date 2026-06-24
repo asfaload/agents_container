@@ -220,3 +220,16 @@ PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
 if [ ! -d "$PROFILE_DIR" ]; then
   die "profile directory not found: $PROFILE_DIR"
 fi
+
+main() {
+  while true; do
+    category=$(run_category_menu)
+    if [ -z "$category" ]; then
+      echo "Done."
+      exit 0
+    fi
+    run_toggle_menu "$category"
+  done
+}
+
+main "$@"
