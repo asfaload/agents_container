@@ -14,8 +14,8 @@ different tech stacks.
 git clone https://github.com/asfaload/agents_container.git
 cd agents_container/cfg
 cp env.sample env
-cd ..
 # edit env and set environment variable as needed
+cd ..
 ./build.sh --profile default
 ./run.sh --profile default $PWD
 # opens container
@@ -25,7 +25,7 @@ opencode
 
 ## Features
 
-It supports different profiles, generating one image per profile (with `build.sh --profile $my_profile`).
+It supports different profiles (see `utils/init_profile.sh`), generating one image per profile (with `build.sh --profile $my_profile`).
 Each profile defines:
 
 * what the image contains by running different scripts
@@ -39,7 +39,7 @@ Software installation in the container is done with 3 types of scripts (each pro
 needed when you install an agent plugin that is added to the agent's config
 when it's persisted on the host (eg superpowers for opencode).
 
-Sample scripts are available under `scripts/` and can be used from your profiles by soft linking them.
+Sample scripts are available under `scripts/` and can be used from your profiles by soft linking them (see `utils/link-scripts.sh`).
 Don't hesitate to contribute new scripts.
 
 When using scripts in your profiles, you can order there execution by naming
