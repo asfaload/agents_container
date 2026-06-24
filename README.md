@@ -127,6 +127,14 @@ Scripts are shared across all profiles under `scripts/`:
 
 Creates `profiles/<name>/` with all standard subdirectories (`mounts/`, `container_scripts/`, `root_scripts/`, `user_scripts/`) and copies `cfg/mounts.cfg.sample` as `profiles/<name>/mounts.cfg`.
 
+### `utils/link-scripts.sh` — Manage script links in a profile
+
+```bash
+./utils/link-scripts.sh --profile <name>
+```
+
+Interactively link and unlink shared scripts from `scripts/` into a profile's `root_scripts/`, `user_scripts/`, and `container_scripts/` directories. Select a category, toggle scripts on/off by number, and confirm to apply changes. The tool creates relative symlinks (`ln -sfr`) matching the existing convention.
+
 ## Build
 
 ```bash
