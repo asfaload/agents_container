@@ -162,8 +162,8 @@ run_toggle_menu() {
       break
     fi
 
+    input=${input//,/ }
     for num in $input; do
-      num=${num//,/}
       if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le "${#scripts[@]}" ]; then
         idx=$((num - 1))
         if [ "${toggles[$idx]}" = "1" ]; then
