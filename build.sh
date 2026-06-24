@@ -96,4 +96,5 @@ docker build \
   --build-arg USER_NAME \
   --build-arg USER_ID \
   --build-arg USER_GROUP \
+  --progress plain \
   "$BUILD_DIR"
