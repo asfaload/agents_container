@@ -1,1 +1,1 @@
-mise use -g npm:opencode-ai
+curl -fsSL https://opencode.ai/install | bash
