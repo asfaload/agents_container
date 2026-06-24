@@ -18,6 +18,7 @@ fi
 . cfg/env
 
 PROFILE="default"
+NO_CACHE_FLAG=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -25,6 +26,10 @@ while [[ $# -gt 0 ]]; do
     --profile)
       PROFILE="$2"
       shift 2
+      ;;
+    --no-cache)
+      NO_CACHE_FLAG="--no-cache"
+      shift
       ;;
     *)
       echo "Unknown option: $1"
@@ -91,6 +96,7 @@ if [ -d "$SCRIPTS_CONTAINER" ]; then
   done
 fi
 
+# ! keep $NO_CACHE_FLAG unquoted so it is absent if empty string!
 docker build \
   -t "$IMAGE_TAG" \
   --build-arg USER_NAME \
@@ -101,4 +107,5 @@ docker build \
   --build-arg MISE_CACHE_DIR \
   --build-arg MISE_INSTALL_PATH \
   --progress plain \
+  $NO_CACHE_FLAG \
   "$BUILD_DIR"
