@@ -20,7 +20,7 @@ mkdir -p "$PROFILE_DIR/container_scripts"
 mkdir -p "$PROFILE_DIR/root_scripts"
 mkdir -p "$PROFILE_DIR/user_scripts"
 
-cp "$SCRIPT_DIR/cfg/mounts.cfg.sample" "$PROFILE_DIR/mounts.cfg"
+cp "$SCRIPT_DIR/cfg/mounts.cfg.template" "$PROFILE_DIR/mounts.cfg"
 
 ln -sfr "$SCRIPT_DIR/scripts/user_scripts/ccusage.sh" "$PROFILE_DIR/user_scripts/ccusage.sh"
 ln -sfr "$SCRIPT_DIR/scripts/root_scripts/opencode.sh" "$PROFILE_DIR/root_scripts/opencode.sh"
