@@ -96,5 +96,9 @@ docker build \
   --build-arg USER_NAME \
   --build-arg USER_ID \
   --build-arg USER_GROUP \
+  --build-arg MISE_DATA_DIR \
+  --build-arg MISE_CONFIG_DIR \
+  --build-arg MISE_CACHE_DIR \
+  --build-arg MISE_INSTALL_PATH \
   --progress plain \
   "$BUILD_DIR"

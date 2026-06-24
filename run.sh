@@ -105,9 +105,10 @@ DOCKER_ARGS+=(
 DOCKER_ARGS+=(
   --env DISPLAY=${DISPLAY}
   --env QT_X11_NO_MITSHM=1
-  --env MISE_DATA_DIR=/tmp/mise/data
-  --env MISE_CACHE_DIR=/tmp/mise/cache
-  --env MISE_CONFIG_DIR=/tmp/mise/config
+  --env MISE_DATA_DIR="$MISE_DATA_DIR"
+  --env MISE_CACHE_DIR="$MISE_CACHE_DIR"
+  --env MISE_CONFIG_DIR="$MISE_CONFIG_DIR"
+  --env MISE_INSTALL_PATH="$MISE_INSTALL_PATH"
 )
 
 # to allow X apps to run

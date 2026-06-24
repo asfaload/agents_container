@@ -3,6 +3,10 @@ FROM debian:trixie
 ARG USER_NAME
 ARG USER_ID
 ARG USER_GROUP
+ARG MISE_DATA_DIR="/mise"
+ARG MISE_CONFIG_DIR="/mise"
+ARG MISE_CACHE_DIR="/mise/cache"
+ARG MISE_INSTALL_PATH="/usr/local/bin/mise"
 RUN apt-get update && apt-get install -y build-essential curl git unzip ca-certificates gnupg
 # added for codenomad
 RUN apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev lld
@@ -37,10 +41,6 @@ RUN bash -c "asfald https://github.com/BurntSushi/ripgrep/releases/download/15.1
 USER root
 # install mise
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ENV MISE_DATA_DIR="/mise"
-ENV MISE_CONFIG_DIR="/mise"
-ENV MISE_CACHE_DIR="/mise/cache"
-ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV PATH="/mise/shims:$PATH"
 RUN mkdir -p /mise/cache && chmod 777 -R /mise
 RUN curl https://mise.run | sh
