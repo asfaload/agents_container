@@ -61,6 +61,33 @@ is_linked() {
   [ -L "$target" ]
 }
 
+link_script() {
+  local category="$1" filename="$2"
+  local src target
+
+  src=$(script_dir_for "$category")/"$filename"
+  target_dir=$(profile_script_dir_for "$category")
+  target="$target_dir/$filename"
+
+  mkdir -p "$target_dir"
+  ln -sfr "$src" "$target"
+  echo "  Linked: $filename"
+}
+
+unlink_script() {
+  local category="$1" filename="$2"
+  local target
+
+  target=$(profile_script_dir_for "$category")/"$filename"
+
+  if [ -L "$target" ]; then
+    rm "$target"
+    echo "  Unlinked: $filename"
+  elif [ -f "$target" ]; then
+    echo "  Warning: '$filename' is a regular file, not a symlink. Skipping." >&2
+  fi
+}
+
 PROFILE=""
 
 while [[ $# -gt 0 ]]; do
