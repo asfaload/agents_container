@@ -8,7 +8,7 @@ if [ ! -f cfg/env ]; then
 fi
 
 . cfg/env
-set -eux
+set -eu
 
 PROFILE="default"
 ARGS=()
@@ -26,6 +26,10 @@ while [[ $# -gt 0 ]]; do
   --profile)
     PROFILE="$2"
     shift 2
+    ;;
+  --debug)
+    set -x
+    shift
     ;;
   *)
     ARGS+=("$1")
