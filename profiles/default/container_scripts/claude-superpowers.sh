@@ -1,1 +1,0 @@
-../../../scripts/container_scripts/claude-superpowers.sh

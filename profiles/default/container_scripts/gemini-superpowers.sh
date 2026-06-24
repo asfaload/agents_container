@@ -1,1 +1,0 @@
-../../../scripts/container_scripts/gemini-superpowers.sh
