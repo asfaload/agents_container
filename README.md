@@ -14,6 +14,7 @@ different tech stacks.
 git clone https://github.com/asfaload/agents_container.git
 cd agents_container/cfg
 cp env.sample env
+cd ..
 # edit env and set environment variable as needed
 ./build.sh --profile default
 ./run.sh --profile default $PWD
@@ -57,7 +58,8 @@ The profile is initialised with a `mounts.cfg` copied from `cfg/mounts.cfg.sampl
 
 Environment variables are defined in `cfg/env` and are shared with all scripts (`build.sh`, `run.sh`, and profiles's scripts.)
 
-
+The user name and email to be used if your agent commits to a git repo are configured in `cfg/git-config.sh` (see `cfg/git-config.sh.sample`).
+A file name identically in your profile directory (`profiles/$profile_name/git-config.sh`) takes precedence.
 
 Further documentation below was mainly written by an LLM agent.
 

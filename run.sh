@@ -59,6 +59,27 @@ if [ ! -f "$MOUNTS_CFG" ]; then
   exit 1
 fi
 
+# git config env vars
+if [ -f "$PROFILE_DIR/git-config.sh" ]; then
+  GIT_CFG="$PROFILE_DIR/git-config.sh"
+else
+  GIT_CFG="$SCRIPT_DIR/cfg/git-config.sh"
+fi
+
+GIT_VAR_FLAGS=()
+if [ ! -f "$GIT_CFG" ]; then
+  echo "git-config.sh not found. Agent will not be able to commit. See cfg/git-config.sh.sample" >&2
+else
+  echo "Using git config from $GIT_CFG"
+  . "$GIT_CFG"
+  if [[ -n "$GIT_USER_EMAIL" && -n "$GIT_USER_NAME" ]]; then
+    GIT_VAR_FLAGS=(--env "GIT_USER_NAME=$GIT_USER_NAME" --env "GIT_USER_EMAIL=$GIT_USER_EMAIL")
+  else
+    echo "Incomplete git configuration!"
+  fi
+fi
+
+
 # Build docker args array early so absolute-path mounts can add to it
 DOCKER_ARGS=()
 
@@ -109,11 +130,13 @@ DOCKER_ARGS+=(
   --env MISE_CACHE_DIR="$MISE_CACHE_DIR"
   --env MISE_CONFIG_DIR="$MISE_CONFIG_DIR"
   --env MISE_INSTALL_PATH="$MISE_INSTALL_PATH"
+  "${GIT_VAR_FLAGS[@]}"
 )
 
 # to allow X apps to run
 xhost +local:docker
 
+# GIT_VAR_FLAGS is an array; empty array expands to nothing when quoted with [@]
 docker run -it \
   "${DOCKER_ARGS[@]}" \
   --workdir "${ARGS[0]}" \

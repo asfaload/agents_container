@@ -1,1 +1,0 @@
-../../../scripts/user_scripts/git-config.sh

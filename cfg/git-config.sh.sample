@@ -1,0 +1,6 @@
+# These variables will be passed to git config --user.name and --user.email
+# inside the container for git commits by the agent.
+# Copy it to cfg/git-config.sh (applied globally) or
+# profiles/$profile_name/git-config.sh (per profile)
+GIT_USER_NAME=""
+GIT_USER_EMAIL=""
