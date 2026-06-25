@@ -24,6 +24,11 @@ fi
 . cfg/env
 set -eu
 
+# docker env vile don't accept comment lines, so we strip them
+DOCKER_ENV_FILE=$(mktemp)
+trap 'rm -f "$DOCKER_ENV_FILE"' EXIT
+grep -v '^#' cfg/env | grep -v '^[[:space:]]*$' >"$DOCKER_ENV_FILE"
+
 PROFILE="default"
 ARGS=()
 
@@ -150,6 +155,7 @@ DOCKER_ARGS+=(
 
 # Environment variables
 DOCKER_ARGS+=(
+  --env-file "$DOCKER_ENV_FILE"
   --env DISPLAY=${DISPLAY}
   --env QT_X11_NO_MITSHM=1
   --env MISE_DATA_DIR="$MISE_DATA_DIR"
