@@ -123,13 +123,13 @@ fi
 # ! keep $NO_CACHE_FLAG unquoted so it is absent if empty string!
 docker build \
   -t "$IMAGE_TAG" \
-  --build-arg USER_NAME \
-  --build-arg USER_ID \
-  --build-arg USER_GROUP \
-  --build-arg MISE_DATA_DIR \
-  --build-arg MISE_CONFIG_DIR \
-  --build-arg MISE_CACHE_DIR \
-  --build-arg MISE_INSTALL_PATH \
+  --build-arg USER_NAME="${USER_NAME}" \
+  --build-arg USER_ID="${USER_ID}" \
+  --build-arg USER_GROUP="${USER_GROUP}" \
+  --build-arg MISE_DATA_DIR="${MISE_DATA_DIR}" \
+  --build-arg MISE_CONFIG_DIR="${MISE_CONFIG_DIR}" \
+  --build-arg MISE_CACHE_DIR="${MISE_CACHE_DIR}" \
+  --build-arg MISE_INSTALL_PATH="${MISE_INSTALL_PATH}" \
   --progress plain \
   $NO_CACHE_FLAG \
   "$BUILD_DIR"
