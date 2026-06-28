@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y build-essential curl git unzip ca-certi
 # added for codenomad
 RUN apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev lld
 
+# Let's make assume-yes the default in the container, for us and the bundled scripts.
+RUN echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/90assumeyes
+
 # Install Node.js (example using version 20)
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs \
