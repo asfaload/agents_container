@@ -54,6 +54,10 @@ RUN apt-get update && apt-get install -y jq
 USER ${USER_NAME}
 RUN mise use -g github:agavra/tuicr
 
+# We will install user binaries in ~/local/bin
+RUN mkdir -p $HOME/local/bin
+RUN echo "PATH=\$PATH:$HOME/local/bin" >> $HOME/.bashrc
+
 USER root
 COPY tmp/env tmp/bundled_root_scripts.sh .
 RUN  bash bundled_root_scripts.sh && rm -f env bundled_root_scripts.sh
