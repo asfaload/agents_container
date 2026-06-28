@@ -57,6 +57,13 @@ done
 
 validate_profile_name "$PROFILE"
 
+for var in USER_NAME USER_ID USER_GROUP; do
+  if [ -z "${!var}" ]; then
+    echo "Error: $var is empty. Check cfg/env." >&2
+    exit 1
+  fi
+done
+
 PROFILE_DIR="$SCRIPT_DIR/profiles/$PROFILE"
 IMAGE_TAG="$IMAGE_NAME"
 
