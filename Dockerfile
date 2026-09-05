@@ -7,9 +7,7 @@ ARG MISE_DATA_DIR="/mise"
 ARG MISE_CONFIG_DIR="/mise"
 ARG MISE_CACHE_DIR="/mise/cache"
 ARG MISE_INSTALL_PATH="/usr/local/bin/mise"
-RUN apt-get update && apt-get install -y build-essential curl git unzip ca-certificates gnupg
-# added for codenomad
-RUN apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev lld
+RUN apt-get update && apt-get install -y make curl git unzip ca-certificates
 
 # Let's make assume-yes the default in the container, for us and the bundled scripts.
 RUN echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/90assumeyes
