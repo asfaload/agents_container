@@ -1,3 +1,5 @@
+apt-get update && apt-get install -y gnupg
+
 mkdir -p /etc/apt/keyrings
 curl -fsSL https://us-central1-apt.pkg.dev/doc/repo-signing-key.gpg | \
   gpg --dearmor --yes -o /etc/apt/keyrings/antigravity-repo-key.gpg
