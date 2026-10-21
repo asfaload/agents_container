@@ -51,6 +51,7 @@ RUN cd /tmp && asfald https://github.com/agavra/tuicr/releases/download/v0.5.0/t
 RUN apt-get update && apt-get install -y jq
 USER ${USER_NAME}
 RUN mise use -g github:agavra/tuicr
+RUN mise use -g npm:skills
 
 # We will install user binaries in ~/local/bin
 RUN mkdir -p $HOME/local/bin
