@@ -32,7 +32,7 @@ chmod +x "$tmp/bin/docker" "$tmp/bin/xhost"
 git archive HEAD | tar -x -C "$tmp/repo"
 cp run.sh "$tmp/repo/run.sh"
 
-export DISPLAY="${DISPLAY:-:0}"
+unset DISPLAY
 
 cat >"$tmp/repo/cfg/env" <<'EOF'
 USER_NAME=tester

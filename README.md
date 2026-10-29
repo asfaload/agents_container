@@ -162,7 +162,7 @@ All profiles share the same set of scripts from `scripts/`, bundled into tempora
 | `bundled_root_scripts.sh` | `root` | Image build (`RUN sh bundled_root_scripts.sh`) |
 | `bundled_container_scripts.sh` | `USER` | Container startup (sourced by entrypoint before `exec "$@"`) |
 
-`cfg/env` and the effective `services.cfg` are copied alongside root and user build bundles and sourced (`. ./env`, `. ./services`) so scripts have access to API keys during image build. After execution, `env`, `services` and the bundle are deleted to avoid baking secrets into the image. The container startup bundle (`bundled_container_scripts.sh`) does **not** receive a copy of `env` — runtime environment variables are passed via `docker run --env` in `run.sh`.
+`cfg/env` and the effective `services.cfg` are copied alongside root and user build bundles and sourced (`. ./env`, `. ./services`) so scripts have access to API keys during image build. After execution, `env`, `services` and the bundle are removed from the working directory. Note that `COPY` followed by `rm` does not remove the files from earlier image layers, so treat a built image as containing your provider configuration and do not push it to an untrusted registry. The container startup bundle (`bundled_container_scripts.sh`) does **not** receive a copy of `env` — runtime environment variables are passed via `docker run --env` in `run.sh`.
 
 ## Run
 
