@@ -24,4 +24,5 @@ cp "$SCRIPT_DIR/cfg/mounts.cfg.template" "$PROFILE_DIR/mounts.cfg"
 
 ln -sfr "$SCRIPT_DIR/scripts/user_scripts/ccusage.sh" "$PROFILE_DIR/user_scripts/ccusage.sh"
 
+echo "To give this profile its own provider config, copy cfg/services.cfg.sample to $PROFILE_DIR/services.cfg (it replaces the global file, it is not merged)."
 echo "Profile '$PROFILE' created at $PROFILE_DIR"

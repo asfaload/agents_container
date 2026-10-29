@@ -15,6 +15,8 @@ git clone https://github.com/asfaload/agents_container.git
 cd agents_container/cfg
 cp env.sample env
 # edit env and set environment variable as needed
+cp services.cfg.sample services.cfg
+# edit services.cfg and set your API keys and provider settings there
 cd ..
 ./build.sh --profile default
 ./run.sh --profile default $PWD
@@ -56,30 +58,39 @@ container.
 You can create a new profile skeleton with `utils/init_profile.sh $my_profile` and tweak it in `profiles/$my_profile`.
 The profile is initialised with a `mounts.cfg` copied from `cfg/mounts.cfg.sample`. Edit it in the profile to tweak it.
 
-Environment variables are defined in `cfg/env` and are shared with all scripts (`build.sh`, `run.sh`, and profiles's scripts.)
+Infrastructure variables are defined in `cfg/env` and are shared with all scripts (`build.sh`, `run.sh`, and profiles's scripts). Provider configuration (API keys, endpoints, model defaults) lives in `cfg/services.cfg`, which each profile may replace with its own `profiles/<name>/services.cfg` (replacement, never merged).
 
 The user name and email to be used if your agent commits to a git repo are configured in `cfg/git-config.sh` (see `cfg/git-config.sh.sample`).
-A file name identically in your profile directory (`profiles/$profile_name/git-config.sh`) takes precedence.
+A file name identically in your profile directory (`profiles/$profile_name/git-config.sh`) takes precedence. `services.cfg` follows the same precedence pattern, but `cfg/env` never does: profiles cannot override infrastructure variables.
 
 Further documentation below was mainly written by an LLM agent.
 
 ## Configuration
 
-### `cfg/env` — Environment variables
+### `cfg/env` — Infrastructure configuration
 
-Copy `cfg/env.sample` to `cfg/env` and fill in your API keys:
+Copy `cfg/env.sample` to `cfg/env`. It holds only infrastructure values, shared by `build.sh` and `run.sh`:
 
 ```
-export USER_NAME=$(id -u -n)
-export USER_ID=$(id -u)
-export USER_GROUP=$(id -g)
-export IMAGE_NAME=ai_agents_${USER_NAME}
-export ANTHROPIC_API_KEY=...
-export GEMINI_API_KEY=...
-...
+USER_NAME=$(id -u -n)
+USER_ID=$(id -u)
+USER_GROUP=$(id -g)
+MISE_DATA_DIR=/mise
+MISE_CONFIG_DIR=/mise
+MISE_CACHE_DIR=/mise/cache
+MISE_INSTALL_PATH=/usr/local/bin/mise
+IMAGE_NAME=ai_agents_${USER_NAME}
 ```
 
-Required by both `build.sh` and `run.sh`.
+Required by both `build.sh` and `run.sh`. This file is never overridden by profiles.
+
+### `cfg/services.cfg` — Provider configuration
+
+Copy `cfg/services.cfg.sample` to `cfg/services.cfg` and uncomment the keys you need. It holds provider configuration: API keys (`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, ...), provider endpoints (`ANTHROPIC_BASE_URL`), model defaults (`ANTHROPIC_DEFAULT_*_MODEL`, `CLAUDE_CODE_SUBAGENT_MODEL`) and provider flags (`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`).
+
+A profile may replace it with `profiles/<name>/services.cfg`. The profile file replaces the global file wholesale; the two are never merged. `build.sh` and `run.sh` print `Using services from <path>` so you can see which file is in effect.
+
+Profiles cannot override `cfg/env`.
 
 ### `mounts.cfg` — Mount manifest
 
@@ -108,6 +119,7 @@ Profiles live under `profiles/<name>/`. Each can have:
 |---|---|
 | `mounts/` | Persistent runtime data mounted into the container at `$HOME/<path>` (gitignored) |
 | `mounts.cfg` | Optional per-profile mount manifest (overrides `cfg/mounts.cfg`) |
+| `services.cfg` | Optional per-profile provider config (replaces `cfg/services.cfg`) |
 
 The `default` profile is used when no `--profile` flag is given.
 
@@ -150,7 +162,7 @@ All profiles share the same set of scripts from `scripts/`, bundled into tempora
 | `bundled_root_scripts.sh` | `root` | Image build (`RUN sh bundled_root_scripts.sh`) |
 | `bundled_container_scripts.sh` | `USER` | Container startup (sourced by entrypoint before `exec "$@"`) |
 
-`cfg/env` is copied alongside root and user build bundles and sourced (`. ./env`) so scripts have access to API keys during image build. After execution, `env` and the bundle are deleted to avoid baking secrets into the image. The container startup bundle (`bundled_container_scripts.sh`) does **not** receive a copy of `env` — runtime environment variables are passed via `docker run --env` in `run.sh`.
+`cfg/env` and the effective `services.cfg` are copied alongside root and user build bundles and sourced (`. ./env`, `. ./services`) so scripts have access to API keys during image build. After execution, `env`, `services` and the bundle are deleted to avoid baking secrets into the image. The container startup bundle (`bundled_container_scripts.sh`) does **not** receive a copy of `env` — runtime environment variables are passed via `docker run --env` in `run.sh`.
 
 ## Run
 
@@ -188,8 +200,10 @@ The container runs as the host user (matching UID/GID from `cfg/env`) and drops 
 ## `.gitignore`
 
 ```
-cfg/env                     # User-specific API keys and config
+cfg/env                     # User-specific infrastructure config
+cfg/services.cfg            # Global provider configuration and API keys
 cfg/mounts.cfg              # User-customized mount manifest
 profiles/*/mounts/          # Runtime agent state (credentials, caches)
 profiles/*/mounts.cfg       # Per-profile mount manifest
+profiles/*/services.cfg     # Per-profile provider configuration and API keys
 ```
