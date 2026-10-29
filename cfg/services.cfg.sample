@@ -1,0 +1,31 @@
+#
+# Provider/services configuration for the agents in the container.
+# API keys, provider endpoints, model defaults and provider flags.
+#
+# A profile can replace this file entirely with profiles/<name>/services.cfg.
+# The profile file REPLACES this one: it is never merged with it.
+#
+# IMPORTANT: DO NOT QUOTE VALUES!
+# This file is passed to docker run --env-file and quoting would include the quotes in the values!
+# Do not put comments on the same line as a value.
+#
+# Privacy configuration
+CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+
+# Provider endpoints, uncomment and fill in as needed
+#ANTHROPIC_BASE_URL=
+
+# Model defaults, uncomment and fill in as needed
+#ANTHROPIC_DEFAULT_SONNET_MODEL=
+#ANTHROPIC_DEFAULT_OPUS_MODEL=
+#ANTHROPIC_DEFAULT_HAIKU_MODEL=
+#CLAUDE_CODE_SUBAGENT_MODEL=
+
+# api keys, uncomment and fill in for use in the container
+#ANTHROPIC_AUTH_TOKEN=
+#ANTHROPIC_API_KEY=
+#SYNTHETIC_API_KEY=
+#OPENCODE_ZEN_API_KEY=
+#GEMINI_API_KEY=
+#MISTRAL_API_KEY=
+#OPENROUTER_API_KEY=
