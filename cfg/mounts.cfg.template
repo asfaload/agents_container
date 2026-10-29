@@ -2,7 +2,8 @@
 # Directories (trailing /)
 .claude/
 .config/
-.local/
+.local/share/
+.local/state/
 .kilocode/
 # Files
 .claude.json
