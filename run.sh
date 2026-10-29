@@ -26,7 +26,8 @@ set -eu
 
 # docker env vile don't accept comment lines, so we strip them
 DOCKER_ENV_FILE=$(mktemp)
-trap 'rm -f "$DOCKER_ENV_FILE"' EXIT
+DOCKER_SERVICES_FILE=""
+trap 'rm -f "$DOCKER_ENV_FILE" "$DOCKER_SERVICES_FILE"' EXIT
 grep -v '^#' cfg/env | grep -v '^[[:space:]]*$' >"$DOCKER_ENV_FILE"
 
 PROFILE="default"
@@ -73,6 +74,17 @@ IMAGE_TAG="$IMAGE_NAME"
 if [ "$PROFILE" != "default" ]; then
   IMAGE_TAG="${IMAGE_NAME}-${PROFILE}"
 fi
+
+# Effective services config: the profile's services.cfg replaces the global one
+. "$SCRIPT_DIR/utils/services.sh"
+if ! SERVICES_CFG=$(resolve_services_file "$PROFILE_DIR" "$SCRIPT_DIR"); then
+  echo "services.cfg not found (tried $PROFILE_DIR/services.cfg and $SCRIPT_DIR/cfg/services.cfg). Copy cfg/services.cfg.sample to cfg/services.cfg and configure it." >&2
+  exit 1
+fi
+echo "Using services from $SERVICES_CFG"
+
+DOCKER_SERVICES_FILE=$(mktemp)
+grep -v '^#' "$SERVICES_CFG" | grep -v '^[[:space:]]*$' >"$DOCKER_SERVICES_FILE"
 
 # Ensure profile mount directory exists
 PROFILE_MOUNTS="$PROFILE_DIR/mounts"
@@ -156,6 +168,7 @@ DOCKER_ARGS+=(
 # Environment variables
 DOCKER_ARGS+=(
   --env-file "$DOCKER_ENV_FILE"
+  --env-file "$DOCKER_SERVICES_FILE"
   --env DISPLAY=${DISPLAY}
   --env QT_X11_NO_MITSHM=1
   --env MISE_DATA_DIR="$MISE_DATA_DIR"
