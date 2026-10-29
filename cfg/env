@@ -1,0 +1,10 @@
+USER_NAME=${USER_NAME:-$(id -u -n)}
+USER_ID=${USER_ID:-$(id -u)}
+USER_GROUP=${USER_GROUP:-$(id -g)}
+
+IMAGE_NAME=${IMAGE_NAME:-ai_agents_$(id -u -n)}
+
+MISE_DATA_DIR=/mise
+MISE_CONFIG_DIR=/mise
+MISE_CACHE_DIR=/mise/cache
+MISE_INSTALL_PATH=/usr/local/bin/mise

@@ -13,8 +13,6 @@ different tech stacks.
 ```
 git clone https://github.com/asfaload/agents_container.git
 cd agents_container/cfg
-cp env.sample env
-# edit env and set environment variable as needed
 cp services.cfg.sample services.cfg
 # edit services.cfg and set your API keys and provider settings there
 cd ..
@@ -69,7 +67,7 @@ Further documentation below was mainly written by an LLM agent.
 
 ### `cfg/env` — Infrastructure configuration
 
-Copy `cfg/env.sample` to `cfg/env`. It holds only infrastructure values, shared by `build.sh` and `run.sh`:
+`cfg/env` is committed and holds only infrastructure values, shared by `build.sh` and `run.sh`. Edit it only if you need different infrastructure values:
 
 ```
 USER_NAME=$(id -u -n)
@@ -200,7 +198,6 @@ The container runs as the host user (matching UID/GID from `cfg/env`) and drops 
 ## `.gitignore`
 
 ```
-cfg/env                     # User-specific infrastructure config
 cfg/services.cfg            # Global provider configuration and API keys
 cfg/mounts.cfg              # User-customized mount manifest
 profiles/*/mounts/          # Runtime agent state (credentials, caches)

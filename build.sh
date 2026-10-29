@@ -25,7 +25,7 @@ validate_profile_name() {
 }
 
 if [ ! -f cfg/env ]; then
-  echo "cfg/env not found. Copy cfg/env.sample to cfg/env and configure it." >&2
+  echo "cfg/env not found. Restore it from git." >&2
   exit 1
 fi
 
