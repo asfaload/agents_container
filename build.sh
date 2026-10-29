@@ -76,6 +76,14 @@ if [ ! -d "$PROFILE_DIR" ]; then
   exit 1
 fi
 
+# Effective services config: the profile's services.cfg replaces the global one
+. "$SCRIPT_DIR/utils/services.sh"
+if ! SERVICES_CFG=$(resolve_services_file "$PROFILE_DIR" "$SCRIPT_DIR"); then
+  echo "services.cfg not found (tried $PROFILE_DIR/services.cfg and $SCRIPT_DIR/cfg/services.cfg). Copy cfg/services.cfg.sample to cfg/services.cfg and configure it." >&2
+  exit 1
+fi
+echo "Using services from $SERVICES_CFG"
+
 # Create a unique, isolated build context per invocation so parallel profile builds don't collide
 BUILD_DIR=$(mktemp -d "$SCRIPT_DIR/tmp/build_${PROFILE}_XXXXXXXX")
 trap 'rm -rf "$BUILD_DIR"' EXIT
@@ -88,6 +96,7 @@ cp "$SCRIPT_DIR/scripts/entrypoint.sh" "$BUILD_DIR/scripts/"
 
 # Make cfg/env available inside the container for bundled scripts
 cp "$SCRIPT_DIR/cfg/env" "$BUILD_DIR/tmp/env"
+cp "$SERVICES_CFG" "$BUILD_DIR/tmp/services"
 
 # Profile-specific script directories (each profile declares what it needs)
 SCRIPTS_USER="$PROFILE_DIR/user_scripts"
@@ -96,7 +105,7 @@ SCRIPTS_CONTAINER="$PROFILE_DIR/container_scripts"
 
 # Bundle user scripts
 USER_BUNDLE="$BUILD_DIR/tmp/bundled_scripts.sh"
-printf '. ./env\n' > "$USER_BUNDLE"
+printf '. ./env\n. ./services\n' > "$USER_BUNDLE"
 if [ -d "$SCRIPTS_USER" ]; then
   for f in "$SCRIPTS_USER"/*; do
     [ -f "$f" ] && cat "$f" >> "$USER_BUNDLE"
@@ -105,7 +114,7 @@ fi
 
 # Bundle root scripts
 ROOT_BUNDLE="$BUILD_DIR/tmp/bundled_root_scripts.sh"
-printf '. ./env\n' > "$ROOT_BUNDLE"
+printf '. ./env\n. ./services\n' > "$ROOT_BUNDLE"
 if [ -d "$SCRIPTS_ROOT" ]; then
   for f in "$SCRIPTS_ROOT"/*; do
     [ -f "$f" ] && cat "$f" >> "$ROOT_BUNDLE"
