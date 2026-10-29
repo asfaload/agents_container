@@ -63,6 +63,10 @@ grep -Fq 'rm -f env services bundled_root_scripts.sh' "$tmp/repo/Dockerfile" ||
   fail "root Dockerfile must delete services after use"
 grep -Fq 'rm -f env services bundled_scripts.sh' "$tmp/repo/Dockerfile" ||
   fail "user Dockerfile must delete services after use"
+grep -Fq 'RUN mkdir -p $HOME/.local/bin' "$tmp/repo/Dockerfile" ||
+  fail "Dockerfile must create ~/.local/bin"
+grep -Fq 'PATH=\$PATH:$HOME/.local/bin' "$tmp/repo/Dockerfile" ||
+  fail "Dockerfile must add ~/.local/bin to PATH"
 
 mkdir -p "$tmp/repo/profiles/bp"
 echo "PROFILE_ONLY=1" >"$tmp/repo/profiles/bp/services.cfg"

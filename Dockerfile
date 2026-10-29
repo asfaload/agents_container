@@ -53,9 +53,9 @@ USER ${USER_NAME}
 RUN mise use -g github:agavra/tuicr
 RUN mise use -g npm:skills
 
-# We will install user binaries in ~/local/bin
-RUN mkdir -p $HOME/local/bin
-RUN echo "PATH=\$PATH:$HOME/local/bin" >> $HOME/.bashrc
+# We will install user binaries in ~/.local/bin
+RUN mkdir -p $HOME/.local/bin
+RUN echo "PATH=\$PATH:$HOME/.local/bin" >> $HOME/.bashrc
 
 USER root
 COPY tmp/env tmp/services tmp/bundled_root_scripts.sh .
