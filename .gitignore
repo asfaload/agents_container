@@ -11,4 +11,4 @@ cfg/mounts.cfg
 tmp
 git-config.sh
 cfg/services.cfg
-profiles/*/services.cfg
+profiles
