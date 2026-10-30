@@ -44,9 +44,14 @@ MISE_CACHE_DIR=/mise/cache
 MISE_INSTALL_PATH=/usr/local/bin/mise
 IMAGE_NAME=test_img
 EOF
-: >"$tmp/repo/cfg/mounts.cfg"
+cat >"$tmp/repo/cfg/mounts.cfg" <<'EOF'
+.claude/
+.local/share/
+.local/state/
+EOF
 
 mkdir -p "$tmp/repo/profiles/tp"
+mkdir -p "$tmp/repo/profiles/tp/mounts/.local/bin"
 echo "GLOBAL_ONLY=1" >"$tmp/repo/cfg/services.cfg"
 echo "PROFILE_ONLY=1" >"$tmp/repo/profiles/tp/services.cfg"
 
@@ -59,6 +64,14 @@ grep -q "Using services from .*profiles/tp/services.cfg" <<<"$out" ||
 grep -q 'PROFILE_ONLY=1' "$MOCK_LOG" || fail "profile services var missing from docker env"
 grep -q 'GLOBAL_ONLY' "$MOCK_LOG" && fail "global services var leaked (must be replaced, not merged)"
 grep -q 'USER_NAME=tester' "$MOCK_LOG" || fail "infrastructure env var missing"
+grep -qF "$tmp/repo/profiles/tp/mounts/.claude:/home/tester/.claude" "$MOCK_LOG" ||
+  fail "relative .claude mount missing"
+grep -qF "$tmp/repo/profiles/tp/mounts/.local/share:/home/tester/.local/share" "$MOCK_LOG" ||
+  fail "relative .local/share mount missing"
+grep -qF "$tmp/repo/profiles/tp/mounts/.local/state:/home/tester/.local/state" "$MOCK_LOG" ||
+  fail "relative .local/state mount missing"
+grep -qF "$tmp/repo/profiles/tp/mounts/.local:/home/tester/.local" "$MOCK_LOG" &&
+  fail "whole .local must not be mounted (it would hide the image's .local/bin)"
 
 # No services file anywhere: hard error, no container start.
 rm "$tmp/repo/cfg/services.cfg"

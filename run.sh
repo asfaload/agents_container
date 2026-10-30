@@ -126,6 +126,13 @@ fi
 # Build docker args array early so absolute-path mounts can add to it
 DOCKER_ARGS=()
 
+# if user name is not set in env, set current user
+user_name=${USER_NAME:-$(id -u -n)}
+
+# Top-level entries already covered by a relative manifest entry are not
+# mounted wholesale, so nested entries like .local/share don't hide .local/bin.
+declare -A MANIFEST_TOP=()
+
 while IFS= read -r line; do
   entry="${line%%#*}"
   entry="${entry#"${entry%%[![:space:]]*}"}"
@@ -135,22 +142,25 @@ while IFS= read -r line; do
     # Absolute path: bind-mount host path at the same path in the container
     DOCKER_ARGS+=(-v "${entry}:${entry}")
   elif [[ "$entry" == */ ]]; then
+    entry="${entry%/}"
     mkdir -p "$PROFILE_MOUNTS/$entry"
+    DOCKER_ARGS+=(-v "$PROFILE_MOUNTS/$entry:/home/${user_name}/${entry}")
+    MANIFEST_TOP["${entry%%/*}"]=1
   else
     dir=$(dirname "$PROFILE_MOUNTS/$entry")
     mkdir -p "$dir"
     [ -f "$PROFILE_MOUNTS/$entry" ] || touch "$PROFILE_MOUNTS/$entry"
+    DOCKER_ARGS+=(-v "$PROFILE_MOUNTS/$entry:/home/${user_name}/${entry}")
+    MANIFEST_TOP["$entry"]=1
   fi
 done <"$MOUNTS_CFG"
 
-# if user name is not set in env, set current user
-user_name=${USER_NAME:-$(id -u -n)}
-
-# Mount profile-specific mounts (all files/dirs under mounts/ are mounted — not just those from mounts.cfg)
+# Mount top-level profile dirs not covered by a relative manifest entry
 for mount_entry in "$PROFILE_MOUNTS"/* "$PROFILE_MOUNTS"/.*; do
   [ -e "$mount_entry" ] || continue
   rel_path=$(basename "$mount_entry")
   [ "$rel_path" = "." ] || [ "$rel_path" = ".." ] && continue
+  [ -n "${MANIFEST_TOP[$rel_path]+x}" ] && continue
   DOCKER_ARGS+=(-v "$mount_entry:/home/${user_name}/${rel_path}")
 done
 
